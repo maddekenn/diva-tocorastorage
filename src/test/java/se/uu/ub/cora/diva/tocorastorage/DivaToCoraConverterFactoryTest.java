@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.diva.tocorastorage.DivaToCoraConverter;
 import se.uu.ub.cora.diva.tocorastorage.DivaToCoraConverterFactory;
 import se.uu.ub.cora.diva.tocorastorage.DivaToCoraConverterFactoryImp;
-import se.uu.ub.cora.diva.tocorastorage.DivaToCoraPlaceConverter;
+import se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverter;
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
 
 public class DivaToCoraConverterFactoryTest {
@@ -46,6 +46,6 @@ public class DivaToCoraConverterFactoryTest {
 	@Test
 	public void testFactoryPlace() throws Exception {
 		DivaToCoraConverter converter = alvinToCoraConverterFactoryImp.factor("place");
-		assertTrue(converter instanceof DivaToCoraPlaceConverter);
+		assertTrue(converter instanceof DivaToCoraPersonConverter);
 	}
 }

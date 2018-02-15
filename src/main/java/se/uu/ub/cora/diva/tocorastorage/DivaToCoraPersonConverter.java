@@ -21,7 +21,7 @@ package se.uu.ub.cora.diva.tocorastorage;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class DivaToCoraPlaceConverter implements DivaToCoraConverter {
+public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
 	private XMLXPathParser parser;
 
@@ -32,21 +32,21 @@ public class DivaToCoraPlaceConverter implements DivaToCoraConverter {
 			return tryToCreateDataGroupFromDocument();
 		} catch (Exception e) {
 			throw ParseException.withMessageAndException(
-					"Error converting place to Cora place: " + e.getMessage(), e);
+					"Error converting person to Cora person: " + e.getMessage(), e);
 		}
 	}
 
 	private DataGroup tryToCreateDataGroupFromDocument() {
-		DataGroup place = DataGroup.withNameInData("authority");
-		createRecordInfoAndAddToPlace(place);
+		DataGroup person = DataGroup.withNameInData("authority");
+		createRecordInfoAndAddToPerson(person);
 
-		createDefaultNameAndAddToPlace(place);
+		createDefaultNameAndAddToPerson(person);
 
-		createCoordinatesAndAddToPlace(place);
-		return place;
+		// createCoordinatesAndAddToPlace(place);
+		return person;
 	}
 
-	private void createRecordInfoAndAddToPlace(DataGroup place) {
+	private void createRecordInfoAndAddToPerson(DataGroup place) {
 		DataGroup recordInfo = DivaToCoraRecordInfoConverter.createRecordInfo(parser);
 		place.addChild(recordInfo);
 	}
@@ -55,7 +55,7 @@ public class DivaToCoraPlaceConverter implements DivaToCoraConverter {
 		return parser.getStringFromDocumentUsingXPath(xpathString);
 	}
 
-	private void createDefaultNameAndAddToPlace(DataGroup place) {
+	private void createDefaultNameAndAddToPerson(DataGroup place) {
 		DataGroup defaultName = DataGroup.withNameInData("name");
 		place.addChild(defaultName);
 		defaultName.addAttributeByIdWithValue("type", "authorized");

@@ -51,7 +51,7 @@ public class DivaToCoraRecordInfoConverter {
 	}
 
 	private void addType() {
-		DataGroup type = createLinkWithNameInDataAndTypeAndId("type", "recordType", "place");
+		DataGroup type = createLinkWithNameInDataAndTypeAndId("type", "recordType", "person");
 		recordInfo.addChild(type);
 	}
 
@@ -64,13 +64,13 @@ public class DivaToCoraRecordInfoConverter {
 	}
 
 	private void parseAndAddId() {
-		String pid = parser.getStringFromDocumentUsingXPath("/place/pid/text()");
+		String pid = parser.getStringFromDocumentUsingXPath("/authorityPerson/pid/text()");
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", pid));
 	}
 
 	private void addDataDivider() {
 		DataGroup dataDivider = createLinkWithNameInDataAndTypeAndId("dataDivider", "system",
-				"alvin");
+				"diva");
 		recordInfo.addChild(dataDivider);
 	}
 
@@ -80,14 +80,14 @@ public class DivaToCoraRecordInfoConverter {
 	}
 
 	private void parseAndAddTsCreated() {
-		String tsCreatedWithUTC = parser
-				.getStringFromDocumentUsingXPath("/place/recordInfo/created/date/text()");
-		String tsCreated = removeUTCFromTimestamp(tsCreatedWithUTC);
+		String tsCreatedWithLetters = parser.getStringFromDocumentUsingXPath(
+				"/authorityPerson/recordInfo/events/event/timestamp/text()");
+		String tsCreated = removeTAndZFromTimestamp(tsCreatedWithLetters);
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("tsCreated", tsCreated));
 	}
 
-	private String removeUTCFromTimestamp(String tsCreatedWithUTC) {
-		return tsCreatedWithUTC.substring(0, tsCreatedWithUTC.indexOf("UTC") - 1);
+	private String removeTAndZFromTimestamp(String tsCreatedWithLetters) {
+		return tsCreatedWithLetters.replace("T", " ").replace("Z", "");
 	}
 
 	private void addUpdatedBy() {
@@ -96,15 +96,15 @@ public class DivaToCoraRecordInfoConverter {
 	}
 
 	private void parseAndAddTsUpdated() {
-		String tsUpdatedWithUTC = getLastTsUpdatedFromDocument();
-		String tsUpdated = removeUTCFromTimestamp(tsUpdatedWithUTC);
+		String tsUpdatedWithLetters = getLastTsUpdatedFromDocument();
+		String tsUpdated = removeTAndZFromTimestamp(tsUpdatedWithLetters);
 
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("tsUpdated", tsUpdated));
 	}
 
 	private String getLastTsUpdatedFromDocument() {
 		NodeList list = parser.getNodeListFromDocumentUsingXPath(
-				"/place/recordInfo/updated/userAction/date/text()");
+				"/authorityPerson/recordInfo/events/event/timestamp/text()");
 		Node item = getTheLastTsUpdatedAsItShouldBeTheLatest(list);
 		return item.getTextContent();
 	}

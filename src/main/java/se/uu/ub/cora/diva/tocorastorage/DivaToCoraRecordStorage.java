@@ -31,7 +31,7 @@ import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public final class DivaToCoraRecordStorage implements RecordStorage {
 
-	private static final String PLACE = "place";
+	private static final String PERSON = "person";
 	private HttpHandlerFactory httpHandlerFactory;
 	private String baseURL;
 	private DivaToCoraConverterFactory converterFactory;
@@ -51,19 +51,19 @@ public final class DivaToCoraRecordStorage implements RecordStorage {
 
 	@Override
 	public DataGroup read(String type, String id) {
-		if (PLACE.equals(type)) {
-			return readAndConvertPlaceFromFedora(id);
+		if (PERSON.equals(type)) {
+			return readAndConvertPersonFromFedora(id);
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);
 	}
 
-	private DataGroup readAndConvertPlaceFromFedora(String id) {
-		HttpHandler httpHandler = createHttpHandlerForPlace(id);
-		DivaToCoraConverter toCoraConverter = converterFactory.factor(PLACE);
+	private DataGroup readAndConvertPersonFromFedora(String id) {
+		HttpHandler httpHandler = createHttpHandlerForPerson(id);
+		DivaToCoraConverter toCoraConverter = converterFactory.factor(PERSON);
 		return toCoraConverter.fromXML(httpHandler.getResponseText());
 	}
 
-	private HttpHandler createHttpHandlerForPlace(String id) {
+	private HttpHandler createHttpHandlerForPerson(String id) {
 		String url = baseURL + "objects/" + id + "/datastreams/METADATA/content";
 		HttpHandler httpHandler = httpHandlerFactory.factor(url);
 		httpHandler.setRequestMethod("GET");
@@ -94,54 +94,54 @@ public final class DivaToCoraRecordStorage implements RecordStorage {
 
 	@Override
 	public Collection<DataGroup> readList(String type, DataGroup filter) {
-		if (PLACE.equals(type)) {
-			return readAndConvertPlaceListFromFedora();
+		if (PERSON.equals(type)) {
+			return readAndConvertPersonListFromFedora();
 		}
 		throw NotImplementedException.withMessage("readList is not implemented for type: " + type);
 	}
 
-	private Collection<DataGroup> readAndConvertPlaceListFromFedora() {
+	private Collection<DataGroup> readAndConvertPersonListFromFedora() {
 		try {
-			return tryReadAndConvertPlaceListFromFedora();
+			return tryReadAndConvertPersonListFromFedora();
 		} catch (Exception e) {
-			throw ReadFedoraException
-					.withMessageAndException("Unable to read list of places: " + e.getMessage(), e);
+			throw ReadFedoraException.withMessageAndException(
+					"Unable to read list of persons: " + e.getMessage(), e);
 		}
 	}
 
-	private Collection<DataGroup> tryReadAndConvertPlaceListFromFedora() {
-		String placeListXML = getPlaceListXMLFromFedora();
-		NodeList list = extractNodeListWithPidsFromXML(placeListXML);
-		return constructCollectionOfPlacesFromFedora(list);
+	private Collection<DataGroup> tryReadAndConvertPersonListFromFedora() {
+		String personListXML = getPersonListXMLFromFedora();
+		NodeList list = extractNodeListWithPidsFromXML(personListXML);
+		return constructCollectionOfPersonFromFedora(list);
 	}
 
-	private String getPlaceListXMLFromFedora() {
-		HttpHandler httpHandler = createHttpHandlerForPlaceList();
+	private String getPersonListXMLFromFedora() {
+		HttpHandler httpHandler = createHttpHandlerForPersonList();
 		return httpHandler.getResponseText();
 	}
 
-	private HttpHandler createHttpHandlerForPlaceList() {
+	private HttpHandler createHttpHandlerForPersonList() {
 		String url = baseURL
-				+ "objects?pid=true&maxResults=100&resultFormat=xml&query=pid%7Ealvin-place:*";
+				+ "objects?pid=true&maxResults=100&resultFormat=xml&query=pid%7Eauthority-person:*";
 		HttpHandler httpHandler = httpHandlerFactory.factor(url);
 		httpHandler.setRequestMethod("GET");
 		return httpHandler;
 	}
 
-	private NodeList extractNodeListWithPidsFromXML(String placeListXML) {
-		XMLXPathParser parser = XMLXPathParser.forXML(placeListXML);
+	private NodeList extractNodeListWithPidsFromXML(String personListXML) {
+		XMLXPathParser parser = XMLXPathParser.forXML(personListXML);
 		return parser
 				.getNodeListFromDocumentUsingXPath("/result/resultList/objectFields/pid/text()");
 	}
 
-	private Collection<DataGroup> constructCollectionOfPlacesFromFedora(NodeList list) {
-		Collection<DataGroup> placeList = new ArrayList<>();
+	private Collection<DataGroup> constructCollectionOfPersonFromFedora(NodeList list) {
+		Collection<DataGroup> personList = new ArrayList<>();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			String pid = node.getTextContent();
-			placeList.add(readAndConvertPlaceFromFedora(pid));
+			personList.add(readAndConvertPersonFromFedora(pid));
 		}
-		return placeList;
+		return personList;
 	}
 
 	@Override
