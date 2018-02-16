@@ -20,9 +20,13 @@ package se.uu.ub.cora.diva.tocorastorage;
 
 import static org.testng.Assert.assertEquals;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.data.DataAttribute;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DivaToCoraPersonConverterTest {
@@ -72,21 +76,47 @@ public class DivaToCoraPersonConverterTest {
 		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("tsUpdated"),
 				"2018-02-08 10:16:19.538");
 
-		DataGroup defaultName = personDataGroup.getFirstGroupWithNameInData("name");
+		DataGroup defaultName = personDataGroup
+				.getAllGroupsWithNameInDataAndAttributes("name",
+						DataAttribute.withNameInDataAndValue("type", "authorized"))
+				.iterator().next();
 		assertEquals(defaultName.getAttribute("type"), "authorized");
-		DataGroup defaultNamePart = defaultName.getFirstGroupWithNameInData("namePart");
-		assertEquals(defaultNamePart.getAttribute("type"), "defaultName");
 
-		// assertEquals(defaultNamePart.getFirstAtomicValueWithNameInData("value"),
-		// "Linköping");
-		//
-		// DataGroup coordinates =
-		// personDataGroup.getFirstGroupWithNameInData("coordinates");
-		// assertEquals(coordinates.getFirstAtomicValueWithNameInData("latitude"),
-		// "58.42");
-		// assertEquals(coordinates.getFirstAtomicValueWithNameInData("longitude"),
-		// "15.62");
+		assertCorrectName(defaultName, "Test", "Testsson", "Grosshandlare", null);
 
+		Collection<DataGroup> alternativeNames = personDataGroup
+				.getAllGroupsWithNameInDataAndAttributes("name",
+						DataAttribute.withNameInDataAndValue("type", "alternative"));
+
+		Iterator<DataGroup> alternativeNamesIterator = alternativeNames.iterator();
+		assertCorrectName(alternativeNamesIterator.next(), "Karl", "Erixon", null, null);
+		assertCorrectName(alternativeNamesIterator.next(), "Karl", "Erixon", null, null);
+
+	}
+
+	private void assertCorrectName(DataGroup defaultName, String givenNameValue,
+			String familyNameValue, String additionValue, String numberValue) {
+		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "givenName",
+				givenNameValue);
+		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "familyName",
+				familyNameValue);
+		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "addition",
+				additionValue);
+		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "number",
+				numberValue);
+	}
+
+	private void assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(DataGroup name,
+			String attributeName, String nameValue) {
+		Collection<DataGroup> givenNames = name.getAllGroupsWithNameInDataAndAttributes("namePart",
+				DataAttribute.withNameInDataAndValue("type", attributeName));
+		if (nameValue == null) {
+			assertEquals(givenNames.size(), 0);
+		} else {
+			assertEquals(givenNames.size(), 1);
+			DataGroup givenName = givenNames.iterator().next();
+			assertEquals(givenName.getFirstAtomicValueWithNameInData("value"), nameValue);
+		}
 	}
 
 }

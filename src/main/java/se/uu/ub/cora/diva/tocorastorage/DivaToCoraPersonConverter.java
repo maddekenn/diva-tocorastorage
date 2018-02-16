@@ -18,6 +18,9 @@
  */
 package se.uu.ub.cora.diva.tocorastorage;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
@@ -41,8 +44,8 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 		createRecordInfoAndAddToPerson(person);
 
 		createDefaultNameAndAddToPerson(person);
+		createAlternativeNameAndAddToPerson(person);
 
-		// createCoordinatesAndAddToPlace(place);
 		return person;
 	}
 
@@ -55,27 +58,71 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 		return parser.getStringFromDocumentUsingXPath(xpathString);
 	}
 
-	private void createDefaultNameAndAddToPerson(DataGroup place) {
+	private void createDefaultNameAndAddToPerson(DataGroup person) {
 		DataGroup defaultName = DataGroup.withNameInData("name");
-		place.addChild(defaultName);
+		person.addChild(defaultName);
 		defaultName.addAttributeByIdWithValue("type", "authorized");
-		createDefaultNamePartAndAddToName(defaultName);
+		createName(defaultName);
 	}
 
-	private void createDefaultNamePartAndAddToName(DataGroup defaultName) {
-		DataGroup defaultNamePart = DataGroup.withNameInData("namePart");
-		defaultName.addChild(defaultNamePart);
-		defaultNamePart.addAttributeByIdWithValue("type", "defaultName");
-		defaultNamePart.addChild(DataAtomic.withNameInDataAndValue("value",
-				getStringFromDocumentUsingXPath("/place/defaultPlaceName/name/text()")));
+	private void createName(DataGroup defaultName) {
+		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "givenName",
+				getDefaultNamePartFromXML("firstname"));
+		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "familyName",
+				getDefaultNamePartFromXML("lastname"));
+		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "addition",
+				getDefaultNamePartFromXML("addition"));
+		// createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "number",
+		// "number");
 	}
 
-	private void createCoordinatesAndAddToPlace(DataGroup place) {
-		DataGroup coordinates = DataGroup.withNameInData("coordinates");
-		place.addChild(coordinates);
-		coordinates.addChild(DataAtomic.withNameInDataAndValue("latitude",
-				getStringFromDocumentUsingXPath("/place/latitude/text()")));
-		coordinates.addChild(DataAtomic.withNameInDataAndValue("longitude",
-				getStringFromDocumentUsingXPath("/place/longitude/text()")));
+	private String getDefaultNamePartFromXML(String xmlTagName) {
+		return getStringFromDocumentUsingXPath(
+				"/authorityPerson/defaultName/" + xmlTagName + "/text()");
+	}
+
+	private void createNamePartAndAddToNameUsingAttributeNameAndXMLTag(DataGroup defaultName,
+			String attributeNameInData, String xmlTagName) {
+		DataGroup givenNamePart = DataGroup.withNameInData("namePart");
+		defaultName.addChild(givenNamePart);
+		givenNamePart.addAttributeByIdWithValue("type", attributeNameInData);
+		givenNamePart.addChild(DataAtomic.withNameInDataAndValue("value", xmlTagName));
+	}
+
+	// private String getLastTsUpdatedFromDocument() {
+	// NodeList list = parser.getNodeListFromDocumentUsingXPath(
+	// "/authorityPerson/recordInfo/events/event/timestamp/text()");
+	// Node item = getTheLastTsUpdatedAsItShouldBeTheLatest(list);
+	// return item.getTextContent();
+	// }
+
+	private void createAlternativeNameAndAddToPerson(DataGroup person) {
+		NodeList list = parser
+				.getNodeListFromDocumentUsingXPath("/authorityPerson/alternativeNames/nameForm");
+		Node item = list.item(0);
+		NodeList childNodes = item.getChildNodes();
+		String textContent = childNodes.item(0).getTextContent();
+		String nodeName = childNodes.item(0).getNodeName();
+		DataGroup defaultName = DataGroup.withNameInData("name");
+		person.addChild(defaultName);
+		defaultName.addAttributeByIdWithValue("type", "alternative");
+		createAlternativeName(defaultName);
+	}
+
+	private void createAlternativeName(DataGroup defaultName) {
+		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "givenName",
+				getAlternativeNamePartFromXML("firstname"));
+		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "familyName",
+				getAlternativeNamePartFromXML("lastname"));
+		// createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName,
+		// "addition",
+		// getAlternativeNamePartFromXML("addition"));
+		// createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "number",
+		// "number");
+	}
+
+	private String getAlternativeNamePartFromXML(String xmlTagName) {
+		return getStringFromDocumentUsingXPath(
+				"/authorityPerson/alternativeNames/nameForm/" + xmlTagName + "/text()");
 	}
 }
