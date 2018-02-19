@@ -23,29 +23,23 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.diva.tocorastorage.DivaToCoraConverter;
-import se.uu.ub.cora.diva.tocorastorage.DivaToCoraConverterFactory;
-import se.uu.ub.cora.diva.tocorastorage.DivaToCoraConverterFactoryImp;
-import se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverter;
-import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
-
 public class DivaToCoraConverterFactoryTest {
-	private DivaToCoraConverterFactory alvinToCoraConverterFactoryImp;
+	private DivaToCoraConverterFactory divaToCoraConverterFactoryImp;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		alvinToCoraConverterFactoryImp = new DivaToCoraConverterFactoryImp();
+		divaToCoraConverterFactoryImp = new DivaToCoraConverterFactoryImp();
 	}
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
 			+ "No converter implemented for: someType")
 	public void factorUnknownTypeThrowsException() throws Exception {
-		alvinToCoraConverterFactoryImp.factor("someType");
+		divaToCoraConverterFactoryImp.factor("someType");
 	}
 
 	@Test
 	public void testFactoryPlace() throws Exception {
-		DivaToCoraConverter converter = alvinToCoraConverterFactoryImp.factor("place");
+		DivaToCoraConverter converter = divaToCoraConverterFactoryImp.factor("divaPerson");
 		assertTrue(converter instanceof DivaToCoraPersonConverter);
 	}
 }

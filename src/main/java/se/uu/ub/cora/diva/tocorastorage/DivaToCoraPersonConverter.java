@@ -26,6 +26,10 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
+	private static final String ADDITION = "addition";
+	private static final String FAMILY_NAME = "familyName";
+	private static final String NUMBER = "number";
+	private static final String GIVEN_NAME = "givenName";
 	private XMLXPathParser parser;
 
 	@Override
@@ -44,7 +48,7 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 		createRecordInfoAndAddToPerson(person);
 
 		createDefaultNameAndAddToPerson(person);
-		createAlternativeNameAndAddToPerson(person);
+		createAlternativeNamesAndAddToPerson(person);
 
 		return person;
 	}
@@ -66,14 +70,14 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 	}
 
 	private void createName(DataGroup defaultName) {
-		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "givenName",
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, GIVEN_NAME,
 				getDefaultNamePartFromXML("firstname"));
-		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "familyName",
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, FAMILY_NAME,
 				getDefaultNamePartFromXML("lastname"));
-		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "addition",
-				getDefaultNamePartFromXML("addition"));
-		// createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "number",
-		// "number");
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, ADDITION,
+				getDefaultNamePartFromXML(ADDITION));
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, NUMBER,
+				getDefaultNamePartFromXML(NUMBER));
 	}
 
 	private String getDefaultNamePartFromXML(String xmlTagName) {
@@ -81,48 +85,65 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 				"/authorityPerson/defaultName/" + xmlTagName + "/text()");
 	}
 
-	private void createNamePartAndAddToNameUsingAttributeNameAndXMLTag(DataGroup defaultName,
-			String attributeNameInData, String xmlTagName) {
+	private void possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(DataGroup defaultName,
+			String attributeNameInData, String value) {
+		if (valueContainsData(value)) {
+			createNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, attributeNameInData,
+					value);
+		}
+	}
+
+	private boolean valueContainsData(String value) {
+		return !"".equals(value);
+	}
+
+	private void createNamePartAndAddToNameUsingAttributeNameAndValue(DataGroup defaultName,
+			String attributeNameInData, String value) {
 		DataGroup givenNamePart = DataGroup.withNameInData("namePart");
 		defaultName.addChild(givenNamePart);
 		givenNamePart.addAttributeByIdWithValue("type", attributeNameInData);
-		givenNamePart.addChild(DataAtomic.withNameInDataAndValue("value", xmlTagName));
+		givenNamePart.addChild(DataAtomic.withNameInDataAndValue("value", value));
 	}
 
-	// private String getLastTsUpdatedFromDocument() {
-	// NodeList list = parser.getNodeListFromDocumentUsingXPath(
-	// "/authorityPerson/recordInfo/events/event/timestamp/text()");
-	// Node item = getTheLastTsUpdatedAsItShouldBeTheLatest(list);
-	// return item.getTextContent();
-	// }
-
-	private void createAlternativeNameAndAddToPerson(DataGroup person) {
+	private void createAlternativeNamesAndAddToPerson(DataGroup person) {
 		NodeList list = parser
 				.getNodeListFromDocumentUsingXPath("/authorityPerson/alternativeNames/nameForm");
-		Node item = list.item(0);
-		NodeList childNodes = item.getChildNodes();
-		String textContent = childNodes.item(0).getTextContent();
-		String nodeName = childNodes.item(0).getNodeName();
-		DataGroup defaultName = DataGroup.withNameInData("name");
-		person.addChild(defaultName);
-		defaultName.addAttributeByIdWithValue("type", "alternative");
-		createAlternativeName(defaultName);
+		createAndAddAllAlternativeNamesToPersonUsingNodeListAndPerson(list, person);
 	}
 
-	private void createAlternativeName(DataGroup defaultName) {
-		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "givenName",
-				getAlternativeNamePartFromXML("firstname"));
-		createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "familyName",
-				getAlternativeNamePartFromXML("lastname"));
-		// createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName,
-		// "addition",
-		// getAlternativeNamePartFromXML("addition"));
-		// createNamePartAndAddToNameUsingAttributeNameAndXMLTag(defaultName, "number",
-		// "number");
+	private void createAndAddAllAlternativeNamesToPersonUsingNodeListAndPerson(NodeList list,
+			DataGroup person) {
+		for (int i = 0; i < list.getLength(); i++) {
+			Node nameForm = list.item(i);
+			addAlternativeNameToPersonUsingNodeAndPersonAndRepeatId(nameForm, person,
+					String.valueOf(i));
+		}
 	}
 
-	private String getAlternativeNamePartFromXML(String xmlTagName) {
-		return getStringFromDocumentUsingXPath(
-				"/authorityPerson/alternativeNames/nameForm/" + xmlTagName + "/text()");
+	private void addAlternativeNameToPersonUsingNodeAndPersonAndRepeatId(Node nameForm,
+			DataGroup person, String repeatId) {
+		DataGroup alternativeName = DataGroup.withNameInData("name");
+		person.addChild(alternativeName);
+		alternativeName.addAttributeByIdWithValue("type", "alternative");
+		alternativeName.setRepeatId(repeatId);
+		createAlternativeNameUsingNameFormNodeAndAddToAlternativeNames(nameForm, alternativeName);
+	}
+
+	private void createAlternativeNameUsingNameFormNodeAndAddToAlternativeNames(Node nameForm,
+			DataGroup alternativeName) {
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, GIVEN_NAME,
+				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, "firstname"));
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, FAMILY_NAME,
+				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, "lastname"));
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, ADDITION,
+				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, ADDITION));
+		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, NUMBER,
+				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, NUMBER));
+	}
+
+	private String getAlternativeNamePartFromXMLUsingNodeAndXPathPart(Node nameForm,
+			String xmlTagName) {
+		return parser.getStringFromDocumentUsingNodeAndXPath(nameForm,
+				"./" + xmlTagName + "/text()");
 	}
 }

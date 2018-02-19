@@ -31,7 +31,7 @@ import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public final class DivaToCoraRecordStorage implements RecordStorage {
 
-	private static final String PERSON = "person";
+	private static final String PERSON = "divaPerson";
 	private HttpHandlerFactory httpHandlerFactory;
 	private String baseURL;
 	private DivaToCoraConverterFactory converterFactory;

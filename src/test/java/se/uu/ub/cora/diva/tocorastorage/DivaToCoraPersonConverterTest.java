@@ -19,6 +19,15 @@
 package se.uu.ub.cora.diva.tocorastorage;
 
 import static org.testng.Assert.assertEquals;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectCreatedByUsingRecordInfoAndUserId;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectIdUsingRecordInfoAndId;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectName;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectTsCreatedUsingRecordInfoAndTsCreated;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectUpdatedByUsingRecordInfoAndUserId;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertRecordInfoPersonInDiva;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.getAlternativeNamesFromPersonDataGroup;
+import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.getDefaultNameFromPersonDataGroup;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,7 +35,6 @@ import java.util.Iterator;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.bookkeeper.data.DataAttribute;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DivaToCoraPersonConverterTest {
@@ -52,71 +60,60 @@ public class DivaToCoraPersonConverterTest {
 				.fromXML(DivaToCoraPersonConverterTestData.person11685XML);
 		assertEquals(personDataGroup.getNameInData(), "authority");
 		DataGroup recordInfo = personDataGroup.getFirstGroupWithNameInData("recordInfo");
-		DataGroup type = recordInfo.getFirstGroupWithNameInData("type");
-		assertEquals(type.getFirstAtomicValueWithNameInData("linkedRecordType"), "recordType");
-		assertEquals(type.getFirstAtomicValueWithNameInData("linkedRecordId"), "person");
+		assertRecordInfoPersonInDiva(recordInfo);
 
-		DataGroup dataDivider = recordInfo.getFirstGroupWithNameInData("dataDivider");
-		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordType"), "system");
-		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordId"), "diva");
+		assertCorrectIdUsingRecordInfoAndId(recordInfo, "authority-person:11685");
 
-		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("id"), "authority-person:11685");
+		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
+		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2016-09-02 10:59:47.428");
 
-		DataGroup createdBy = recordInfo.getFirstGroupWithNameInData("createdBy");
-		assertEquals(createdBy.getFirstAtomicValueWithNameInData("linkedRecordType"), "user");
-		assertEquals(createdBy.getFirstAtomicValueWithNameInData("linkedRecordId"), "12345");
+		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
+		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
-		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("tsCreated"),
-				"2016-09-02 10:59:47.428");
-
-		DataGroup updatedBy = recordInfo.getFirstGroupWithNameInData("updatedBy");
-		assertEquals(updatedBy.getFirstAtomicValueWithNameInData("linkedRecordType"), "user");
-		assertEquals(updatedBy.getFirstAtomicValueWithNameInData("linkedRecordId"), "12345");
-
-		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("tsUpdated"),
-				"2018-02-08 10:16:19.538");
-
-		DataGroup defaultName = personDataGroup
-				.getAllGroupsWithNameInDataAndAttributes("name",
-						DataAttribute.withNameInDataAndValue("type", "authorized"))
-				.iterator().next();
+		DataGroup defaultName = getDefaultNameFromPersonDataGroup(personDataGroup);
 		assertEquals(defaultName.getAttribute("type"), "authorized");
 
-		assertCorrectName(defaultName, "Test", "Testsson", "Grosshandlare", null);
+		assertCorrectName(defaultName, "Test", "Testsson", "Grosshandlare", null, null);
 
-		Collection<DataGroup> alternativeNames = personDataGroup
-				.getAllGroupsWithNameInDataAndAttributes("name",
-						DataAttribute.withNameInDataAndValue("type", "alternative"));
+		Collection<DataGroup> alternativeNames = getAlternativeNamesFromPersonDataGroup(
+				personDataGroup);
+		assertEquals(alternativeNames.size(), 3);
 
 		Iterator<DataGroup> alternativeNamesIterator = alternativeNames.iterator();
-		assertCorrectName(alternativeNamesIterator.next(), "Karl", "Erixon", null, null);
-		assertCorrectName(alternativeNamesIterator.next(), "Karl", "Erixon", null, null);
+		assertCorrectName(alternativeNamesIterator.next(), "Karl", "Erixon", null, "III", "0");
+		assertCorrectName(alternativeNamesIterator.next(), "Test", "Testsson", null, null, "1");
+		assertCorrectName(alternativeNamesIterator.next(), "Test2", "Testsson2", "Sir", "IV", "2");
 
 	}
 
-	private void assertCorrectName(DataGroup defaultName, String givenNameValue,
-			String familyNameValue, String additionValue, String numberValue) {
-		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "givenName",
-				givenNameValue);
-		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "familyName",
-				familyNameValue);
-		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "addition",
-				additionValue);
-		assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(defaultName, "number",
-				numberValue);
-	}
+	@Test
+	public void convertFromXMLPerson10000() throws Exception {
+		DataGroup personDataGroup = converter
+				.fromXML(DivaToCoraPersonConverterTestData.person10000XML);
+		assertEquals(personDataGroup.getNameInData(), "authority");
+		DataGroup recordInfo = personDataGroup.getFirstGroupWithNameInData("recordInfo");
+		assertRecordInfoPersonInDiva(recordInfo);
 
-	private void assertCorrectNamePartUsingNameGroupAndAttributeNameAndValue(DataGroup name,
-			String attributeName, String nameValue) {
-		Collection<DataGroup> givenNames = name.getAllGroupsWithNameInDataAndAttributes("namePart",
-				DataAttribute.withNameInDataAndValue("type", attributeName));
-		if (nameValue == null) {
-			assertEquals(givenNames.size(), 0);
-		} else {
-			assertEquals(givenNames.size(), 1);
-			DataGroup givenName = givenNames.iterator().next();
-			assertEquals(givenName.getFirstAtomicValueWithNameInData("value"), nameValue);
-		}
+		assertCorrectIdUsingRecordInfoAndId(recordInfo, "authority-person:10000");
+
+		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
+		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
+
+		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
+		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+
+		DataGroup defaultName = getDefaultNameFromPersonDataGroup(personDataGroup);
+		assertEquals(defaultName.getAttribute("type"), "authorized");
+
+		assertCorrectName(defaultName, "Sven", "Svensson", "Grosshandlare", "VI", null);
+
+		Collection<DataGroup> alternativeNames = getAlternativeNamesFromPersonDataGroup(
+				personDataGroup);
+		assertEquals(alternativeNames.size(), 1);
+
+		Iterator<DataGroup> alternativeNamesIterator = alternativeNames.iterator();
+		assertCorrectName(alternativeNamesIterator.next(), "Sven", "Karlsson", null, null, "0");
+
 	}
 
 }

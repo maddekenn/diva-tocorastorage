@@ -65,7 +65,7 @@ public class DivaToCoraRecordStorageTest {
 	@Test
 	public void readPersonCallsFedoraAndReturnsConvertedResult() throws Exception {
 		httpHandlerFactory.responseText = "Dummy response text";
-		DataGroup readPerson = divaToCoraRecordStorage.read("person", "authority-person:11685");
+		DataGroup readPerson = divaToCoraRecordStorage.read("divaPerson", "authority-person:11685");
 		assertEquals(httpHandlerFactory.urls.get(0),
 				baseURL + "objects/authority-person:11685/datastreams/METADATA/content");
 		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 1);
@@ -74,7 +74,7 @@ public class DivaToCoraRecordStorageTest {
 		assertEquals(httpHandler.requestMetod, "GET");
 
 		assertEquals(converterFactory.factoredConverters.size(), 1);
-		assertEquals(converterFactory.factoredTypes.get(0), "person");
+		assertEquals(converterFactory.factoredTypes.get(0), "divaPerson");
 		DivaToCoraConverterSpy divaToCoraConverter = (DivaToCoraConverterSpy) converterFactory.factoredConverters
 				.get(0);
 		assertEquals(divaToCoraConverter.xml, httpHandlerFactory.responseText);
@@ -116,13 +116,13 @@ public class DivaToCoraRecordStorageTest {
 			+ "The element type \"someTag\" must be terminated by the matching end-tag \"</someTag>\".")
 	public void readListThrowsParseExceptionOnBrokenXML() throws Exception {
 		httpHandlerFactory.responseText = "<someTag></notSameTag>";
-		divaToCoraRecordStorage.readList("person", DataGroup.withNameInData("filter"));
+		divaToCoraRecordStorage.readList("divaPerson", DataGroup.withNameInData("filter"));
 	}
 
 	@Test
 	public void readPersonListCallsFedoraAndReturnsConvertedResult() throws Exception {
 		httpHandlerFactory.responseText = createXMLForPersonList();
-		Collection<DataGroup> readPersonList = divaToCoraRecordStorage.readList("person",
+		Collection<DataGroup> readPersonList = divaToCoraRecordStorage.readList("divaPerson",
 				DataGroup.withNameInData("filter"));
 		assertEquals(httpHandlerFactory.urls.get(0), baseURL
 				+ "objects?pid=true&maxResults=100&resultFormat=xml&query=pid%7Eauthority-person:*");
@@ -139,7 +139,7 @@ public class DivaToCoraRecordStorageTest {
 				baseURL + "objects/authority-person:13685/datastreams/METADATA/content");
 
 		assertEquals(converterFactory.factoredConverters.size(), 3);
-		assertEquals(converterFactory.factoredTypes.get(0), "person");
+		assertEquals(converterFactory.factoredTypes.get(0), "divaPerson");
 		DivaToCoraConverterSpy divaToCoraConverter = (DivaToCoraConverterSpy) converterFactory.factoredConverters
 				.get(0);
 		assertEquals(divaToCoraConverter.xml, httpHandlerFactory.responseText);

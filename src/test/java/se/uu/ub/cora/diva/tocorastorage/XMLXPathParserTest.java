@@ -19,9 +19,7 @@
 package se.uu.ub.cora.diva.tocorastorage;
 
 import org.testng.annotations.Test;
-
-import se.uu.ub.cora.diva.tocorastorage.ParseException;
-import se.uu.ub.cora.diva.tocorastorage.XMLXPathParser;
+import org.w3c.dom.NodeList;
 
 public class XMLXPathParserTest {
 
@@ -37,6 +35,14 @@ public class XMLXPathParserTest {
 	public void testMalformedXPathForNodeList() throws Exception {
 		XMLXPathParser parser = XMLXPathParser.forXML("<pid></pid>");
 		parser.getNodeListFromDocumentUsingXPath("/broken/xpath/string not");
+	}
 
+	@Test(expectedExceptions = ParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "Unable to use xpathString: javax.xml.transform.TransformerException: Extra illegal tokens: 'not'")
+	public void testMalformedXPathForNodeAndXPath() throws Exception {
+		XMLXPathParser parser = XMLXPathParser.forXML("<pid><name></name></pid>");
+		NodeList nodeList = parser.getNodeListFromDocumentUsingXPath("/pid");
+
+		parser.getStringFromDocumentUsingNodeAndXPath(nodeList.item(0), "/broken/xpath/string not");
 	}
 }
