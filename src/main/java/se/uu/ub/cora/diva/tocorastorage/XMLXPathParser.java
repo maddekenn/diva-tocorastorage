@@ -76,7 +76,7 @@ public final class XMLXPathParser {
 			return (String) expr.evaluate(document, XPathConstants.STRING);
 		} catch (XPathExpressionException e) {
 			throw ParseException
-					.withMessageAndException("Unable to use xpathString: " + e.getMessage(), e);
+					.withMessageAndException(getXPathStringErrorMessage() + e.getMessage(), e);
 		}
 
 	}
@@ -88,7 +88,7 @@ public final class XMLXPathParser {
 			return (String) expr.evaluate(node, XPathConstants.STRING);
 		} catch (XPathExpressionException e) {
 			throw ParseException
-					.withMessageAndException("Unable to use xpathString: " + e.getMessage(), e);
+					.withMessageAndException(getXPathStringErrorMessage() + e.getMessage(), e);
 		}
 
 	}
@@ -99,8 +99,12 @@ public final class XMLXPathParser {
 			return (NodeList) expr.evaluate(document, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			throw ParseException
-					.withMessageAndException("Unable to use xpathString: " + e.getMessage(), e);
+					.withMessageAndException(getXPathStringErrorMessage() + e.getMessage(), e);
 		}
+	}
+
+	private String getXPathStringErrorMessage() {
+		return "Unable to use xpathString: ";
 	}
 
 }
