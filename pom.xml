@@ -33,7 +33,7 @@
 	<name>DiVA To Cora Storage</name>
 
 	<properties>
-		<httphandler.version>0.2-SNAPSHOT</httphandler.version>
+		<httphandler.version>0.3-SNAPSHOT</httphandler.version>
 		<bookkeeper.version>0.10-SNAPSHOT</bookkeeper.version>
 		<spider.version>0.14-SNAPSHOT</spider.version>
 	</properties>
