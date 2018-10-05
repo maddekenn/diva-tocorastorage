@@ -123,7 +123,7 @@ public class DivaToCoraRecordStorageTest {
 	public void readPersonListCallsFedoraAndReturnsConvertedResult() throws Exception {
 		httpHandlerFactory.responseText = createXMLForPersonList();
 		Collection<DataGroup> readPersonList = divaToCoraRecordStorage.readList("divaPerson",
-				DataGroup.withNameInData("filter"));
+				DataGroup.withNameInData("filter")).listOfDataGroups;
 		assertEquals(httpHandlerFactory.urls.get(0), baseURL
 				+ "objects?pid=true&maxResults=100&resultFormat=xml&query=pid%7Eauthority-person:*");
 		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 4);
