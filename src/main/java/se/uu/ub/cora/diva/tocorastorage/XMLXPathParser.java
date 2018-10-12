@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public final class XMLXPathParser {
+	private static final String XPATH_STRING_ERROR_MESSAGE = "Unable to use xpathString: ";
 	private Document document;
 	private XPath xpath;
 
@@ -76,7 +77,7 @@ public final class XMLXPathParser {
 			return (String) expr.evaluate(document, XPathConstants.STRING);
 		} catch (XPathExpressionException e) {
 			throw ParseException
-					.withMessageAndException(getXPathStringErrorMessage() + e.getMessage(), e);
+					.withMessageAndException(XPATH_STRING_ERROR_MESSAGE + e.getMessage(), e);
 		}
 
 	}
@@ -88,7 +89,7 @@ public final class XMLXPathParser {
 			return (String) expr.evaluate(node, XPathConstants.STRING);
 		} catch (XPathExpressionException e) {
 			throw ParseException
-					.withMessageAndException(getXPathStringErrorMessage() + e.getMessage(), e);
+					.withMessageAndException(XPATH_STRING_ERROR_MESSAGE + e.getMessage(), e);
 		}
 
 	}
@@ -99,12 +100,8 @@ public final class XMLXPathParser {
 			return (NodeList) expr.evaluate(document, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			throw ParseException
-					.withMessageAndException(getXPathStringErrorMessage() + e.getMessage(), e);
+					.withMessageAndException(XPATH_STRING_ERROR_MESSAGE + e.getMessage(), e);
 		}
-	}
-
-	private String getXPathStringErrorMessage() {
-		return "Unable to use xpathString: ";
 	}
 
 }
