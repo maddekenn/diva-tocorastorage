@@ -26,10 +26,6 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
-	private static final String ADDITION = "addition";
-	private static final String FAMILY_NAME = "familyName";
-	private static final String NUMBER = "number";
-	private static final String GIVEN_NAME = "givenName";
 	private XMLXPathParser parser;
 
 	@Override
@@ -44,7 +40,7 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 	}
 
 	private DataGroup tryToCreateDataGroupFromDocument() {
-		DataGroup person = DataGroup.withNameInData("authority");
+		DataGroup person = DataGroup.withNameInData("person");
 		createRecordInfoAndAddToPerson(person);
 
 		createDefaultNameAndAddToPerson(person);
@@ -63,21 +59,29 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 	}
 
 	private void createDefaultNameAndAddToPerson(DataGroup person) {
-		DataGroup defaultName = DataGroup.withNameInData("name");
-		person.addChild(defaultName);
-		defaultName.addAttributeByIdWithValue("type", "authorized");
+		DataGroup defaultName = DataGroup.withNameInData("personName");
 		createName(defaultName);
+		if (dataGroupHasChildren(defaultName)) {
+			person.addChild(defaultName);
+		}
 	}
 
-	private void createName(DataGroup defaultName) {
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, GIVEN_NAME,
-				getDefaultNamePartFromXML("firstname"));
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, FAMILY_NAME,
-				getDefaultNamePartFromXML("lastname"));
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, ADDITION,
-				getDefaultNamePartFromXML(ADDITION));
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, NUMBER,
-				getDefaultNamePartFromXML(NUMBER));
+	private boolean dataGroupHasChildren(DataGroup dataGroup) {
+		return !dataGroup.getChildren().isEmpty();
+	}
+
+	private void createName(DataGroup nameGroup) {
+		String lastName = getDefaultNamePartFromXML("lastname");
+		possiblyAddChildToGroupUsingNameInDataAndValue(nameGroup, "personLastName", lastName);
+		String firstName = getDefaultNamePartFromXML("firstname");
+		possiblyAddChildToGroupUsingNameInDataAndValue(nameGroup, "personFirstName", firstName);
+	}
+
+	private void possiblyAddChildToGroupUsingNameInDataAndValue(DataGroup nameGroup,
+			String childNameInData, String value) {
+		if (valueContainsData(value)) {
+			nameGroup.addChild(DataAtomic.withNameInDataAndValue(childNameInData, value));
+		}
 	}
 
 	private String getDefaultNamePartFromXML(String xmlTagName) {
@@ -85,24 +89,8 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 				"/authorityPerson/defaultName/" + xmlTagName + "/text()");
 	}
 
-	private void possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(DataGroup defaultName,
-			String attributeNameInData, String value) {
-		if (valueContainsData(value)) {
-			createNamePartAndAddToNameUsingAttributeNameAndValue(defaultName, attributeNameInData,
-					value);
-		}
-	}
-
 	private boolean valueContainsData(String value) {
 		return !"".equals(value);
-	}
-
-	private void createNamePartAndAddToNameUsingAttributeNameAndValue(DataGroup defaultName,
-			String attributeNameInData, String value) {
-		DataGroup givenNamePart = DataGroup.withNameInData("namePart");
-		defaultName.addChild(givenNamePart);
-		givenNamePart.addAttributeByIdWithValue("type", attributeNameInData);
-		givenNamePart.addChild(DataAtomic.withNameInDataAndValue("value", value));
 	}
 
 	private void createAlternativeNamesAndAddToPerson(DataGroup person) {
@@ -122,23 +110,24 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
 	private void addAlternativeNameToPersonUsingNodeAndPersonAndRepeatId(Node nameForm,
 			DataGroup person, String repeatId) {
-		DataGroup alternativeName = DataGroup.withNameInData("name");
-		person.addChild(alternativeName);
-		alternativeName.addAttributeByIdWithValue("type", "alternative");
-		alternativeName.setRepeatId(repeatId);
-		createAlternativeNameUsingNameFormNodeAndAddToAlternativeNames(nameForm, alternativeName);
+		DataGroup alternativeName = DataGroup.withNameInData("personAlternativeName");
+		addChildrenToAlternativeName(nameForm, alternativeName);
+
+		if (dataGroupHasChildren(alternativeName)) {
+			alternativeName.setRepeatId(repeatId);
+			person.addChild(alternativeName);
+		}
+
 	}
 
-	private void createAlternativeNameUsingNameFormNodeAndAddToAlternativeNames(Node nameForm,
-			DataGroup alternativeName) {
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, GIVEN_NAME,
-				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, "firstname"));
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, FAMILY_NAME,
-				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, "lastname"));
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, ADDITION,
-				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, ADDITION));
-		possiblyCreateNamePartAndAddToNameUsingAttributeNameAndValue(alternativeName, NUMBER,
-				getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, NUMBER));
+	private void addChildrenToAlternativeName(Node nameForm, DataGroup alternativeName) {
+		String lastName = getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, "lastname");
+		possiblyAddChildToGroupUsingNameInDataAndValue(alternativeName, "personLastName", lastName);
+
+		String firstName = getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm,
+				"firstname");
+		possiblyAddChildToGroupUsingNameInDataAndValue(alternativeName, "personFirstName",
+				firstName);
 	}
 
 	private String getAlternativeNamePartFromXMLUsingNodeAndXPathPart(Node nameForm,
