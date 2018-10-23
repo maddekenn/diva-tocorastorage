@@ -33,7 +33,7 @@ import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public final class DivaToCoraRecordStorage implements RecordStorage {
 
-	private static final String PERSON = "divaPerson";
+	private static final String PERSON = "person";
 	private HttpHandlerFactory httpHandlerFactory;
 	private String baseURL;
 	private DivaToCoraConverterFactory converterFactory;
@@ -114,7 +114,7 @@ public final class DivaToCoraRecordStorage implements RecordStorage {
 	private SpiderReadResult tryGetSpiderReadResultFromFedoraPersonListConversion() {
 		SpiderReadResult spiderReadResult = new SpiderReadResult();
 		spiderReadResult.listOfDataGroups = (List<DataGroup>) tryReadAndConvertPersonListFromFedora();
-		return  spiderReadResult;
+		return spiderReadResult;
 	}
 
 	private Collection<DataGroup> tryReadAndConvertPersonListFromFedora() {

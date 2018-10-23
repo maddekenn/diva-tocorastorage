@@ -4,7 +4,7 @@ public class DivaToCoraConverterFactoryImp implements DivaToCoraConverterFactory
 
 	@Override
 	public DivaToCoraConverter factor(String type) {
-		if ("divaPerson".equals(type)) {
+		if ("person".equals(type)) {
 			return new DivaToCoraPersonConverter();
 		}
 		throw NotImplementedException.withMessage("No converter implemented for: " + type);

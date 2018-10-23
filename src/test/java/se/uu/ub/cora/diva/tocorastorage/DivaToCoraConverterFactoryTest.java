@@ -38,8 +38,8 @@ public class DivaToCoraConverterFactoryTest {
 	}
 
 	@Test
-	public void testFactoryPlace() throws Exception {
-		DivaToCoraConverter converter = divaToCoraConverterFactoryImp.factor("divaPerson");
+	public void testFactoryPerson() throws Exception {
+		DivaToCoraConverter converter = divaToCoraConverterFactoryImp.factor("person");
 		assertTrue(converter instanceof DivaToCoraPersonConverter);
 	}
 }

@@ -81,7 +81,7 @@ public class DivaToCoraPersonConverterTestHelper {
 	public static void assertRecordInfoPersonInDiva(DataGroup recordInfo) {
 		DataGroup type = recordInfo.getFirstGroupWithNameInData("type");
 		assertEquals(type.getFirstAtomicValueWithNameInData("linkedRecordType"), "recordType");
-		assertEquals(type.getFirstAtomicValueWithNameInData("linkedRecordId"), "divaPerson");
+		assertEquals(type.getFirstAtomicValueWithNameInData("linkedRecordId"), "person");
 
 		DataGroup dataDivider = recordInfo.getFirstGroupWithNameInData("dataDivider");
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordType"), "system");

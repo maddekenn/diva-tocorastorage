@@ -51,7 +51,7 @@ public class DivaToCoraRecordInfoConverter {
 	}
 
 	private void addType() {
-		DataGroup type = createLinkWithNameInDataAndTypeAndId("type", "recordType", "divaPerson");
+		DataGroup type = createLinkWithNameInDataAndTypeAndId("type", "recordType", "person");
 		recordInfo.addChild(type);
 	}
 
