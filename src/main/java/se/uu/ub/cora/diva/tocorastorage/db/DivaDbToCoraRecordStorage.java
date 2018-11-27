@@ -33,12 +33,12 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 	@Override
 	public DataGroup read(String type, String id) {
 		if ("organisation".equals(type)) {
-			return readAndConvertCountryFromDb(type, id);
+			return readAndConvertOrganisationFromDb(type, id);
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);
 	}
 
-	private DataGroup readAndConvertCountryFromDb(String type, String id) {
+	private DataGroup readAndConvertOrganisationFromDb(String type, String id) {
 		Map<String, String> readRow = readOneRowFromDbUsingTypeAndId(type, id);
 		return convertOneMapFromDbToDataGroup(type, readRow);
 	}
@@ -81,50 +81,60 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 	@Override
 	public SpiderReadResult readList(String type, DataGroup filter) {
 		if ("organisation".equals(type)) {
-			RecordReader recordReader = recordReaderFactory.factor();
-			List<Map<String, String>> rowsFromDb = recordReader.readAllFromTable(type);
-			SpiderReadResult spiderReadResult = new SpiderReadResult();
-			List<DataGroup> convertedList = new ArrayList<>();
-			for (Map<String, String> map : rowsFromDb) {
-				DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
-				DataGroup dataGroup = dbToCoraConverter.fromMap(map);
-				convertedList.add(dataGroup);
-			}
-			spiderReadResult.listOfDataGroups = convertedList;
-			return spiderReadResult;
+			List<Map<String, String>> rowsFromDb = readAllFromDb(type);
+			return createSpiderReadResultFromDbData(type, rowsFromDb);
 		}
 		throw NotImplementedException.withMessage("readList is not implemented for type: " + type);
 	}
 
+	private List<Map<String, String>> readAllFromDb(String type) {
+		RecordReader recordReader = recordReaderFactory.factor();
+		return recordReader.readAllFromTable(type);
+	}
+
+	private SpiderReadResult createSpiderReadResultFromDbData(String type,
+			List<Map<String, String>> rowsFromDb) {
+		SpiderReadResult spiderReadResult = new SpiderReadResult();
+		spiderReadResult.listOfDataGroups = convertListOfMapsFromDbToDataGroups(type, rowsFromDb);
+		return spiderReadResult;
+	}
+
+	private List<DataGroup> convertListOfMapsFromDbToDataGroups(String type,
+			List<Map<String, String>> readAllFromTable) {
+		List<DataGroup> convertedList = new ArrayList<>();
+		for (Map<String, String> map : readAllFromTable) {
+			DataGroup convertedGroup = convertOneMapFromDbToDataGroup(type, map);
+			convertedList.add(convertedGroup);
+		}
+		return convertedList;
+	}
+
 	@Override
 	public SpiderReadResult readAbstractList(String type, DataGroup filter) {
-		// TODO Auto-generated method stub
-		return null;
+		throw NotImplementedException.withMessage("readAbstractList is not implemented");
 	}
 
 	@Override
 	public DataGroup readLinkList(String type, String id) {
-		// TODO Auto-generated method stub
-		return null;
+		throw NotImplementedException.withMessage("readLinkList is not implemented");
 	}
 
 	@Override
 	public Collection<DataGroup> generateLinkCollectionPointingToRecord(String type, String id) {
-		// TODO Auto-generated method stub
-		return null;
+		throw NotImplementedException
+				.withMessage("generateLinkCollectionPointingToRecord is not implemented");
 	}
 
 	@Override
 	public boolean recordsExistForRecordType(String type) {
-		// TODO Auto-generated method stub
-		return false;
+		throw NotImplementedException.withMessage("recordsExistForRecordType is not implemented");
 	}
 
 	@Override
 	public boolean recordExistsForAbstractOrImplementingRecordTypeAndRecordId(String type,
 			String id) {
-		// TODO Auto-generated method stub
-		return false;
+		throw NotImplementedException.withMessage(
+				"recordExistsForAbstractOrImplementingRecordTypeAndRecordId is not implemented");
 	}
 
 }

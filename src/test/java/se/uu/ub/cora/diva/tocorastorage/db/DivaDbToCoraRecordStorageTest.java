@@ -190,7 +190,7 @@ public class DivaDbToCoraRecordStorageTest {
 		recordReaderFactory.noOfRecordsToReturn = 3;
 		SpiderReadResult spiderReadResult = divaToCoraRecordStorage.readList(TABLE_NAME,
 				DataGroup.withNameInData("filter"));
-		List<DataGroup> readCountryList = spiderReadResult.listOfDataGroups;
+		List<DataGroup> readOrganisationList = spiderReadResult.listOfDataGroups;
 		RecordReaderSpy recordReader = recordReaderFactory.factored;
 
 		assertEquals(recordReader.returnedList.size(), 3);
@@ -198,66 +198,50 @@ public class DivaDbToCoraRecordStorageTest {
 		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
 				.get(0);
 		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
-		assertEquals(readCountryList.get(0), divaDbToCoraConverter.convertedDbDataGroup);
+		assertEquals(readOrganisationList.get(0), divaDbToCoraConverter.convertedDbDataGroup);
 
-		// AlvinDbToCoraConverterSpy alvinDbToCoraConverter2 =
-		// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-		// .get(1);
-		// assertEquals(recordReader.returnedList.get(1),
-		// alvinDbToCoraConverter2.mapToConvert);
-		// assertEquals(readCountryList.get(1),
-		// alvinDbToCoraConverter2.convertedDbDataGroup);
-		//
-		// AlvinDbToCoraConverterSpy alvinDbToCoraConverter3 =
-		// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-		// .get(2);
-		// assertEquals(recordReader.returnedList.get(2),
-		// alvinDbToCoraConverter3.mapToConvert);
-		// assertEquals(readCountryList.get(2),
-		// alvinDbToCoraConverter3.convertedDbDataGroup);
+		DivaDbToCoraConverterSpy divaDbToCoraConverter2 = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(1);
+		assertEquals(recordReader.returnedList.get(1), divaDbToCoraConverter2.mapToConvert);
+		assertEquals(readOrganisationList.get(1), divaDbToCoraConverter2.convertedDbDataGroup);
+
+		DivaDbToCoraConverterSpy divaDbToCoraConverter3 = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(2);
+		assertEquals(recordReader.returnedList.get(2), divaDbToCoraConverter3.mapToConvert);
+		assertEquals(readOrganisationList.get(2), divaDbToCoraConverter3.convertedDbDataGroup);
 
 	}
 
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "readAbstractList is not implemented")
-	// public void readAbstractListThrowsNotImplementedException() throws Exception
-	// {
-	// alvinToCoraRecordStorage.readAbstractList(null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "readLinkList is not implemented")
-	// public void readLinkListThrowsNotImplementedException() throws Exception {
-	// alvinToCoraRecordStorage.readLinkList(null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "generateLinkCollectionPointingToRecord is not implemented")
-	// public void
-	// generateLinkCollectionPointingToRecordThrowsNotImplementedException()
-	// throws Exception {
-	// alvinToCoraRecordStorage.generateLinkCollectionPointingToRecord(null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "recordsExistForRecordType is not implemented")
-	// public void recordsExistForRecordTypeThrowsNotImplementedException() throws
-	// Exception {
-	// alvinToCoraRecordStorage.recordsExistForRecordType(null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "recordExistsForAbstractOrImplementingRecordTypeAndRecordId is not
-	// implemented")
-	// public void
-	// recordExistsForAbstractOrImplementingRecordTypeAndRecordIdThrowsNotImplementedException()
-	// throws Exception {
-	// alvinToCoraRecordStorage.recordExistsForAbstractOrImplementingRecordTypeAndRecordId(null,
-	// null);
-	// }
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "readAbstractList is not implemented")
+	public void readAbstractListThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.readAbstractList(null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "readLinkList is not implemented")
+	public void readLinkListThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.readLinkList(null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "generateLinkCollectionPointingToRecord is not implemented")
+	public void generateLinkCollectionPointingToRecordThrowsNotImplementedException()
+			throws Exception {
+		divaToCoraRecordStorage.generateLinkCollectionPointingToRecord(null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "recordsExistForRecordType is not implemented")
+	public void recordsExistForRecordTypeThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.recordsExistForRecordType(null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "recordExistsForAbstractOrImplementingRecordTypeAndRecordId is not implemented")
+	public void recordExistsForAbstractOrImplementingRecordTypeAndRecordIdThrowsNotImplementedException()
+			throws Exception {
+		divaToCoraRecordStorage.recordExistsForAbstractOrImplementingRecordTypeAndRecordId(null,
+				null);
+	}
 }
