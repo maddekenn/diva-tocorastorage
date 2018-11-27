@@ -7,11 +7,13 @@ public class RecordReaderFactorySpy implements RecordReaderFactory {
 
 	public boolean factorWasCalled;
 	public RecordReaderSpy factored;
+	public int noOfRecordsToReturn;
 
 	@Override
 	public RecordReader factor() {
 		factorWasCalled = true;
 		factored = new RecordReaderSpy();
+		factored.noOfRecordsToReturn = noOfRecordsToReturn;
 		return factored;
 	}
 

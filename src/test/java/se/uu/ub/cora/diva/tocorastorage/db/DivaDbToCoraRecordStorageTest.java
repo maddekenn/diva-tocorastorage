@@ -22,10 +22,15 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import java.util.List;
+import java.util.Map;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
+import se.uu.ub.cora.spider.data.SpiderReadResult;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public class DivaDbToCoraRecordStorageTest {
@@ -71,178 +76,148 @@ public class DivaDbToCoraRecordStorageTest {
 		assertEquals(recordReader.usedTableName, TABLE_NAME);
 	}
 
-	// @Test
-	// public void testReadCountryConditionsForCountryTable() throws Exception {
-	// alvinToCoraRecordStorage.read("country", "someId");
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	// Map<String, String> conditions = recordReader.usedConditions;
-	// assertEquals(conditions.get("alpha2code"), "someId");
-	// }
-	//
-	// @Test
-	// public void testReadCountryConverterIsFactored() throws Exception {
-	// alvinToCoraRecordStorage.read("country", "someId");
-	// AlvinDbToCoraConverter alvinDbToCoraConverter =
-	// converterFactory.factoredConverters.get(0);
-	// assertNotNull(alvinDbToCoraConverter);
-	// }
-	//
-	// @Test
-	// public void testReadCountryConverterIsCalledWithDataFromDbStorage() throws
-	// Exception {
-	// alvinToCoraRecordStorage.read("country", "someId");
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(0);
-	// assertNotNull(alvinDbToCoraConverter.mapToConvert);
-	// assertEquals(recordReader.returnedList.get(0),
-	// alvinDbToCoraConverter.mapToConvert);
-	// }
-	//
-	// @Test
-	// public void testReadCountryCallsDatabaseAndReturnsConvertedResult() throws
-	// Exception {
-	// DataGroup readCountry = alvinToCoraRecordStorage.read("country", "someId");
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(0);
-	// assertEquals(recordReader.returnedList.size(), 1);
-	// assertEquals(recordReader.returnedList.get(0),
-	// alvinDbToCoraConverter.mapToConvert);
-	// assertEquals(readCountry, alvinDbToCoraConverter.convertedDbDataGroup);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "create is not implemented")
-	// public void createThrowsNotImplementedException() throws Exception {
-	// alvinToCoraRecordStorage.create(null, null, null, null, null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "deleteByTypeAndId is not implemented")
-	// public void deleteByTypeAndIdThrowsNotImplementedException() throws Exception
-	// {
-	// alvinToCoraRecordStorage.deleteByTypeAndId(null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "linksExistForRecord is not implemented")
-	// public void linksExistForRecordThrowsNotImplementedException() throws
-	// Exception {
-	// alvinToCoraRecordStorage.linksExistForRecord(null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "update is not implemented")
-	// public void updateThrowsNotImplementedException() throws Exception {
-	// alvinToCoraRecordStorage.update(null, null, null, null, null, null);
-	// }
-	//
-	// @Test(expectedExceptions = NotImplementedException.class,
-	// expectedExceptionsMessageRegExp = ""
-	// + "readList is not implemented for type: null")
-	// public void readListThrowsNotImplementedException() throws Exception {
-	// alvinToCoraRecordStorage.readList(null, null);
-	// }
-	//
-	// @Test
-	// public void testReadCountryListFactorDbReader() throws Exception {
-	// alvinToCoraRecordStorage.readList("country",
-	// DataGroup.withNameInData("filter"));
-	// assertTrue(recordReaderFactory.factorWasCalled);
-	// }
-	//
-	// @Test
-	// public void testReadCountryListCountryTableRequestedFromReader() throws
-	// Exception {
-	// alvinToCoraRecordStorage.readList("country",
-	// DataGroup.withNameInData("filter"));
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	// assertEquals(recordReader.usedTableName, "country");
-	// }
-	//
-	// @Test
-	// public void testReadCountryListConverterIsFactored() throws Exception {
-	// alvinToCoraRecordStorage.readList("country",
-	// DataGroup.withNameInData("filter"));
-	// AlvinDbToCoraConverter alvinDbToCoraConverter =
-	// converterFactory.factoredConverters.get(0);
-	// assertNotNull(alvinDbToCoraConverter);
-	// }
-	//
-	// @Test
-	// public void testReadCountryListConverterIsCalledWithDataFromDbStorage()
-	// throws Exception {
-	// alvinToCoraRecordStorage.readList("country",
-	// DataGroup.withNameInData("filter"));
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(0);
-	// assertNotNull(alvinDbToCoraConverter.mapToConvert);
-	// assertEquals(recordReader.returnedList.get(0),
-	// alvinDbToCoraConverter.mapToConvert);
-	// }
-	//
-	// @Test
-	// public void testReadCountryListConverteredIsAddedToList() throws Exception {
-	// List<DataGroup> readCountryList =
-	// alvinToCoraRecordStorage.readList("country",
-	// DataGroup.withNameInData("filter")).listOfDataGroups;
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(0);
-	// assertEquals(recordReader.returnedList.size(), 1);
-	// assertEquals(recordReader.returnedList.get(0),
-	// alvinDbToCoraConverter.mapToConvert);
-	// assertEquals(readCountryList.get(0),
-	// alvinDbToCoraConverter.convertedDbDataGroup);
-	// }
-	//
-	// @Test
-	// public void testReadCountryListConverteredMoreThanOneIsAddedToList() throws
-	// Exception {
-	// recordReaderFactory.noOfRecordsToReturn = 3;
-	// List<DataGroup> readCountryList =
-	// alvinToCoraRecordStorage.readList("country",
-	// DataGroup.withNameInData("filter")).listOfDataGroups;
-	// RecordReaderSpy recordReader = recordReaderFactory.factored;
-	//
-	// assertEquals(recordReader.returnedList.size(), 3);
-	//
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(0);
-	// assertEquals(recordReader.returnedList.get(0),
-	// alvinDbToCoraConverter.mapToConvert);
-	// assertEquals(readCountryList.get(0),
-	// alvinDbToCoraConverter.convertedDbDataGroup);
-	//
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter2 =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(1);
-	// assertEquals(recordReader.returnedList.get(1),
-	// alvinDbToCoraConverter2.mapToConvert);
-	// assertEquals(readCountryList.get(1),
-	// alvinDbToCoraConverter2.convertedDbDataGroup);
-	//
-	// AlvinDbToCoraConverterSpy alvinDbToCoraConverter3 =
-	// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
-	// .get(2);
-	// assertEquals(recordReader.returnedList.get(2),
-	// alvinDbToCoraConverter3.mapToConvert);
-	// assertEquals(readCountryList.get(2),
-	// alvinDbToCoraConverter3.convertedDbDataGroup);
-	//
-	// }
-	//
+	@Test
+	public void testReadOrganisationConditionsForOrganisationTable() throws Exception {
+		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+		Map<String, String> conditions = recordReader.usedConditions;
+		assertEquals(conditions.get("organisation_id"), "someId");
+	}
+
+	@Test
+	public void testReadOrganisationConverterIsFactored() throws Exception {
+		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+		DivaDbToCoraConverter divaDbToCoraConverter = converterFactory.factoredConverters.get(0);
+		assertNotNull(divaDbToCoraConverter);
+	}
+
+	@Test
+	public void testReadOrganisationConverterIsCalledWithDataFromDbStorage() throws Exception {
+		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(0);
+		assertNotNull(divaDbToCoraConverter.mapToConvert);
+		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
+	}
+
+	@Test
+	public void testReadOrganisationCallsDatabaseAndReturnsConvertedResult() throws Exception {
+		DataGroup readCountry = divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(0);
+		assertEquals(recordReader.returnedList.size(), 1);
+		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
+		assertEquals(readCountry, divaDbToCoraConverter.convertedDbDataGroup);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "create is not implemented")
+	public void createThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.create(null, null, null, null, null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "deleteByTypeAndId is not implemented")
+	public void deleteByTypeAndIdThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.deleteByTypeAndId(null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "linksExistForRecord is not implemented")
+	public void linksExistForRecordThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.linksExistForRecord(null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "update is not implemented")
+	public void updateThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.update(null, null, null, null, null, null);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "readList is not implemented for type: null")
+	public void readListThrowsNotImplementedException() throws Exception {
+		divaToCoraRecordStorage.readList(null, null);
+	}
+
+	@Test
+	public void testReadOrganisationListFactorDbReader() throws Exception {
+		divaToCoraRecordStorage.readList(TABLE_NAME, DataGroup.withNameInData("filter"));
+		assertTrue(recordReaderFactory.factorWasCalled);
+	}
+
+	@Test
+	public void testReadOrganisationListCountryTableRequestedFromReader() throws Exception {
+		divaToCoraRecordStorage.readList(TABLE_NAME, DataGroup.withNameInData("filter"));
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+		assertEquals(recordReader.usedTableName, TABLE_NAME);
+	}
+
+	@Test
+	public void testReadOrganisationListConverterIsFactored() throws Exception {
+		divaToCoraRecordStorage.readList(TABLE_NAME, DataGroup.withNameInData("filter"));
+		DivaDbToCoraConverter divaDbToCoraConverter = converterFactory.factoredConverters.get(0);
+		assertNotNull(divaDbToCoraConverter);
+	}
+
+	@Test
+	public void testReadOrganisationListConverterIsCalledWithDataFromDbStorage() throws Exception {
+		divaToCoraRecordStorage.readList(TABLE_NAME, DataGroup.withNameInData("filter"));
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(0);
+		assertNotNull(divaDbToCoraConverter.mapToConvert);
+		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
+	}
+
+	@Test
+	public void testReadOrganisationListConverteredIsAddedToList() throws Exception {
+		SpiderReadResult spiderReadresult = divaToCoraRecordStorage.readList(TABLE_NAME,
+				DataGroup.withNameInData("filter"));
+		List<DataGroup> readCountryList = spiderReadresult.listOfDataGroups;
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(0);
+		assertEquals(recordReader.returnedList.size(), 1);
+		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
+		assertEquals(readCountryList.get(0), divaDbToCoraConverter.convertedDbDataGroup);
+	}
+
+	@Test
+	public void testReadOrganisationListConverteredMoreThanOneIsAddedToList() throws Exception {
+		recordReaderFactory.noOfRecordsToReturn = 3;
+		SpiderReadResult spiderReadResult = divaToCoraRecordStorage.readList(TABLE_NAME,
+				DataGroup.withNameInData("filter"));
+		List<DataGroup> readCountryList = spiderReadResult.listOfDataGroups;
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+
+		assertEquals(recordReader.returnedList.size(), 3);
+
+		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(0);
+		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
+		assertEquals(readCountryList.get(0), divaDbToCoraConverter.convertedDbDataGroup);
+
+		// AlvinDbToCoraConverterSpy alvinDbToCoraConverter2 =
+		// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
+		// .get(1);
+		// assertEquals(recordReader.returnedList.get(1),
+		// alvinDbToCoraConverter2.mapToConvert);
+		// assertEquals(readCountryList.get(1),
+		// alvinDbToCoraConverter2.convertedDbDataGroup);
+		//
+		// AlvinDbToCoraConverterSpy alvinDbToCoraConverter3 =
+		// (AlvinDbToCoraConverterSpy) converterFactory.factoredConverters
+		// .get(2);
+		// assertEquals(recordReader.returnedList.get(2),
+		// alvinDbToCoraConverter3.mapToConvert);
+		// assertEquals(readCountryList.get(2),
+		// alvinDbToCoraConverter3.convertedDbDataGroup);
+
+	}
+
 	// @Test(expectedExceptions = NotImplementedException.class,
 	// expectedExceptionsMessageRegExp = ""
 	// + "readAbstractList is not implemented")
