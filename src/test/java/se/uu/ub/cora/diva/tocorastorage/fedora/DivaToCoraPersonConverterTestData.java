@@ -1,4 +1,4 @@
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 public class DivaToCoraPersonConverterTestData {
 	public static String person11685XML = "<authorityPerson>\n" + "  <type>PERSON</type>\n"

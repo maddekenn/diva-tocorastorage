@@ -1,4 +1,4 @@
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import java.util.ArrayList;
 import java.util.List;

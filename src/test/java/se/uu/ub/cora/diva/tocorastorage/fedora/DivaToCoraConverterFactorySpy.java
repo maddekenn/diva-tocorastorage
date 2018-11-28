@@ -16,10 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
-public interface DivaToCoraConverterFactory {
+import java.util.ArrayList;
+import java.util.List;
 
-	DivaToCoraConverter factor(String type);
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverter;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverterFactory;
+
+public class DivaToCoraConverterFactorySpy implements DivaToCoraConverterFactory {
+
+	List<DivaToCoraConverter> factoredConverters = new ArrayList<>();
+	List<String> factoredTypes = new ArrayList<>();
+
+	@Override
+	public DivaToCoraConverter factor(String type) {
+		factoredTypes.add(type);
+		DivaToCoraConverter converter = new DivaToCoraConverterSpy();
+		factoredConverters.add(converter);
+		return converter;
+	}
 
 }
