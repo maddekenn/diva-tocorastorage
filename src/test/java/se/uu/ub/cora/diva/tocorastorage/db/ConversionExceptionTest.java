@@ -18,24 +18,25 @@
  */
 package se.uu.ub.cora.diva.tocorastorage.db;
 
-public final class ConversionException extends RuntimeException {
+import static org.testng.Assert.assertEquals;
 
-	private static final long serialVersionUID = -4108157549434110470L;
+import org.testng.annotations.Test;
 
-	public static ConversionException withMessage(String message) {
-		return new ConversionException(message);
+public class ConversionExceptionTest {
+	@Test
+	public void testInit() {
+		String message = "message";
+		ConversionException exception = ConversionException.withMessage(message);
+		assertEquals(exception.getMessage(), "message");
 	}
 
-	public static ConversionException withMessageAndException(String message, Exception e) {
-		return new ConversionException(message, e);
-	}
+	@Test
+	public void testWithMessageAndException() throws Exception {
+		Exception e = new Exception("some message");
+		ConversionException exception = ConversionException
+				.withMessageAndException("second message", e);
+		assertEquals(exception.getMessage(), "second message");
+		assertEquals(exception.getCause().getMessage(), "some message");
 
-	private ConversionException(String message) {
-		super(message);
 	}
-
-	private ConversionException(String message, Exception e) {
-		super(message, e);
-	}
-
 }

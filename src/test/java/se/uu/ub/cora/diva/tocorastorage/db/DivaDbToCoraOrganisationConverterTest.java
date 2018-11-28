@@ -67,37 +67,48 @@ public class DivaDbToCoraOrganisationConverterTest {
 	}
 
 	@Test
-	public void testOrganisationName(){
+	public void testOrganisationName() {
 		rowFromDb.put("organisation_name", "Java-fakulteten");
 		DataGroup organisation = converter.fromMap(rowFromDb);
 		assertEquals(organisation.getNameInData(), "divaOrganisation");
-		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationName"), "Java-fakulteten");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationName"),
+				"Java-fakulteten");
 	}
 
 	@Test
-	public void testTypeCode(){
+	public void testTypeCode() {
 		rowFromDb.put("type_code", "unit");
 		DataGroup organisation = converter.fromMap(rowFromDb);
-		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationOrgType"), "unit");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationOrgType"),
+				"unit");
 	}
 
 	@Test
-	public void testAlternativeName(){
-		rowFromDb.put("alternative_name","Java Faculty");
+	public void testAlternativeName() {
+		rowFromDb.put("alternative_name", "Java Faculty");
 		DataGroup organisation = converter.fromMap(rowFromDb);
 		assertTrue(organisation.containsChildWithNameInData("alternativeName"));
 		DataGroup alternativeName = organisation.getFirstGroupWithNameInData("alternativeName");
 		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("language"), "en");
-		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("alternative_name"),"Java Faculty");
+		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("alternative_name"),
+				"Java Faculty");
 	}
 
 	@Test
-	public void testOrganisationEligible(){
+	public void testOrganisationNotEligible() {
 		rowFromDb.put("not_eligible", "t");
 		DataGroup organisation = converter.fromMap(rowFromDb);
-		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationEligible"), "no");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationEligible"),
+				"no");
 	}
 
+	@Test
+	public void testOrganisationEligible() {
+		rowFromDb.put("not_eligible", "f");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationEligible"),
+				"yes");
+	}
 
 	private void assertCorrectRecordInfoWithId(DataGroup organisation, String id) {
 		DataGroup recordInfo = organisation.getFirstGroupWithNameInData("recordInfo");
@@ -112,8 +123,5 @@ public class DivaDbToCoraOrganisationConverterTest {
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordId"), "diva");
 
 	}
-
-
-
 
 }
