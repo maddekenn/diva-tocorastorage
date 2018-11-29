@@ -20,12 +20,12 @@ public class DivaDbToCoraOrganisationConverterTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("organisation_id", "someOrgId");
+		rowFromDb.put("id", "someOrgId");
 		converter = new DivaDbToCoraOrganisationConverter();
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation to Cora organisation: Map does not contain value for organisation_id")
+			+ "Error converting organisation to Cora organisation: Map does not contain value for id")
 	public void testEmptyMap() {
 		rowFromDb = new HashMap<>();
 		DataGroup organisation = converter.fromMap(rowFromDb);
@@ -33,29 +33,28 @@ public class DivaDbToCoraOrganisationConverterTest {
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation to Cora organisation: Map does not contain value for organisation_id")
+			+ "Error converting organisation to Cora organisation: Map does not contain value for id")
 	public void testMapWithEmptyValueThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("organisation_id", "");
+		rowFromDb.put("id", "");
 		converter.fromMap(rowFromDb);
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation to Cora organisation: Map does not contain value for organisation_id")
+			+ "Error converting organisation to Cora organisation: Map does not contain value for id")
 	public void testMapWithNonEmptyValueANDEmptyValueThrowsError() {
 		Map<String, String> rowFromDb = new HashMap<>();
-		rowFromDb.put("organisation_name", "someName");
-		rowFromDb.put("organisation_id", "");
+		rowFromDb.put("defaultName", "someName");
+		rowFromDb.put("id", "");
 		converter.fromMap(rowFromDb);
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation to Cora organisation: Map does not contain value for organisation_id")
+			+ "Error converting organisation to Cora organisation: Map does not contain value for id")
 	public void mapDoesNotContainOrganisationIdValue() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("organisation_name", "someName");
-		DataGroup organisation = converter.fromMap(rowFromDb);
-
+		rowFromDb.put("defaultName", "someName");
+		converter.fromMap(rowFromDb);
 	}
 
 	@Test
@@ -68,7 +67,7 @@ public class DivaDbToCoraOrganisationConverterTest {
 
 	@Test
 	public void testOrganisationName() {
-		rowFromDb.put("organisation_name", "Java-fakulteten");
+		rowFromDb.put("defaultName", "Java-fakulteten");
 		DataGroup organisation = converter.fromMap(rowFromDb);
 		assertEquals(organisation.getNameInData(), "divaOrganisation");
 		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationName"),
