@@ -32,7 +32,7 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 
 	@Override
 	public DataGroup read(String type, String id) {
-		if ("organisation".equals(type)) {
+		if ("divaOrganisation".equals(type)) {
 			return readAndConvertOrganisationFromDb(type, id);
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);
@@ -46,7 +46,7 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 	private Map<String, String> readOneRowFromDbUsingTypeAndId(String type, String id) {
 		RecordReader recordReader = recordReaderFactory.factor();
 		Map<String, String> conditions = new HashMap<>();
-		conditions.put("organisation_id", id);
+		conditions.put("id", id);
 		return recordReader.readOneRowFromDbUsingTableAndConditions(type, conditions);
 	}
 
@@ -80,7 +80,7 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 
 	@Override
 	public SpiderReadResult readList(String type, DataGroup filter) {
-		if ("organisation".equals(type)) {
+		if ("divaOrganisation".equals(type)) {
 			List<Map<String, String>> rowsFromDb = readAllFromDb(type);
 			return createSpiderReadResultFromDbData(type, rowsFromDb);
 		}

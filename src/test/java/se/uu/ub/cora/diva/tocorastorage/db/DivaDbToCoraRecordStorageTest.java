@@ -34,7 +34,7 @@ import se.uu.ub.cora.spider.data.SpiderReadResult;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public class DivaDbToCoraRecordStorageTest {
-	private static final String TABLE_NAME = "organisation";
+	private static final String TABLE_NAME = "divaOrganisation";
 	private DivaDbToCoraRecordStorage divaToCoraRecordStorage;
 	private DivaDbToCoraConverterFactorySpy converterFactory;
 	private RecordReaderFactorySpy recordReaderFactory;
@@ -81,7 +81,7 @@ public class DivaDbToCoraRecordStorageTest {
 		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
 		RecordReaderSpy recordReader = recordReaderFactory.factored;
 		Map<String, String> conditions = recordReader.usedConditions;
-		assertEquals(conditions.get("organisation_id"), "someId");
+		assertEquals(conditions.get("id"), "someId");
 	}
 
 	@Test
