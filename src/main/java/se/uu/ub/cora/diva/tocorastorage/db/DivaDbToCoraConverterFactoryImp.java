@@ -6,7 +6,7 @@ public class DivaDbToCoraConverterFactoryImp implements DivaDbToCoraConverterFac
 
 	@Override
 	public DivaDbToCoraConverter factor(String type) {
-		if ("organisation".equals(type)) {
+		if ("divaOrganisation".equals(type)) {
 			return new DivaDbToCoraOrganisationConverter();
 		}
 		throw NotImplementedException.withMessage("No converter implemented for: " + type);

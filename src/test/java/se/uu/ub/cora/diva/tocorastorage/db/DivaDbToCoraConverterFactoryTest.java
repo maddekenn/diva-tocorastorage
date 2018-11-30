@@ -41,7 +41,8 @@ public class DivaDbToCoraConverterFactoryTest {
 
 	@Test
 	public void testFactoryOrganisation() throws Exception {
-		DivaDbToCoraConverter converter = divaDbToCoraConverterFactoryImp.factor("organisation");
+		DivaDbToCoraConverter converter = divaDbToCoraConverterFactoryImp
+				.factor("divaOrganisation");
 		assertTrue(converter instanceof DivaDbToCoraOrganisationConverter);
 	}
 }
