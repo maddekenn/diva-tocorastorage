@@ -16,12 +16,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+public interface DivaToCoraConverterFactory {
 
-public interface DivaToCoraConverter {
-
-	DataGroup fromXML(String xml);
+	DivaToCoraConverter factor(String type);
 
 }

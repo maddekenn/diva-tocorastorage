@@ -36,6 +36,7 @@
 		<httphandler.version>0.5-SNAPSHOT</httphandler.version>
 		<bookkeeper.version>0.13-SNAPSHOT</bookkeeper.version>
 		<spider.version>0.16-SNAPSHOT</spider.version>
+		<sqldatabase.version>0.2-SNAPSHOT</sqldatabase.version>
 	</properties>
 
 	<scm>

@@ -1,4 +1,6 @@
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
+
+import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
 
 public class DivaToCoraConverterFactoryImp implements DivaToCoraConverterFactory {
 

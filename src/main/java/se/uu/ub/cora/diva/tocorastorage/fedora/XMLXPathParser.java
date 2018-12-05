@@ -1,4 +1,4 @@
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -20,6 +20,8 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import se.uu.ub.cora.diva.tocorastorage.ParseException;
 
 public final class XMLXPathParser {
 	private static final String XPATH_STRING_ERROR_MESSAGE = "Unable to use xpathString: ";
