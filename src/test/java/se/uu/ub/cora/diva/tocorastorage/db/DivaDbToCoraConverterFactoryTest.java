@@ -16,30 +16,33 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.db;
 
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class DivaToCoraConverterFactoryTest {
-	private DivaToCoraConverterFactory divaToCoraConverterFactoryImp;
+import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
+
+public class DivaDbToCoraConverterFactoryTest {
+	private DivaDbToCoraConverterFactory divaDbToCoraConverterFactoryImp;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		divaToCoraConverterFactoryImp = new DivaToCoraConverterFactoryImp();
+		divaDbToCoraConverterFactoryImp = new DivaDbToCoraConverterFactoryImp();
 	}
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
 			+ "No converter implemented for: someType")
 	public void factorUnknownTypeThrowsException() throws Exception {
-		divaToCoraConverterFactoryImp.factor("someType");
+		divaDbToCoraConverterFactoryImp.factor("someType");
 	}
 
 	@Test
-	public void testFactoryPerson() throws Exception {
-		DivaToCoraConverter converter = divaToCoraConverterFactoryImp.factor("person");
-		assertTrue(converter instanceof DivaToCoraPersonConverter);
+	public void testFactoryOrganisation() throws Exception {
+		DivaDbToCoraConverter converter = divaDbToCoraConverterFactoryImp
+				.factor("divaOrganisation");
+		assertTrue(converter instanceof DivaDbToCoraOrganisationConverter);
 	}
 }

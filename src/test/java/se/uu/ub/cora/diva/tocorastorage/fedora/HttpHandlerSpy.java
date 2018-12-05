@@ -1,4 +1,4 @@
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import java.io.InputStream;
 

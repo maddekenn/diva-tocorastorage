@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -29,6 +29,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
+import se.uu.ub.cora.diva.tocorastorage.ReadFedoraException;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraRecordStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public class DivaToCoraRecordStorageTest {

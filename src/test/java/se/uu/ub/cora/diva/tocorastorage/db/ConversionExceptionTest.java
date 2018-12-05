@@ -16,10 +16,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.db;
 
-public interface DivaToCoraConverterFactory {
+import static org.testng.Assert.assertEquals;
 
-	DivaToCoraConverter factor(String type);
+import org.testng.annotations.Test;
 
+public class ConversionExceptionTest {
+	@Test
+	public void testInit() {
+		String message = "message";
+		ConversionException exception = ConversionException.withMessage(message);
+		assertEquals(exception.getMessage(), "message");
+	}
+
+	@Test
+	public void testWithMessageAndException() throws Exception {
+		Exception e = new Exception("some message");
+		ConversionException exception = ConversionException
+				.withMessageAndException("second message", e);
+		assertEquals(exception.getMessage(), "second message");
+		assertEquals(exception.getCause().getMessage(), "some message");
+
+	}
 }

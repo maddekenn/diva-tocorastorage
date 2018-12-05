@@ -16,16 +16,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.diva.tocorastorage;
+package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectCreatedByUsingRecordInfoAndUserId;
-import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectIdUsingRecordInfoAndId;
-import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectTsCreatedUsingRecordInfoAndTsCreated;
-import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated;
-import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertCorrectUpdatedByUsingRecordInfoAndUserId;
-import static se.uu.ub.cora.diva.tocorastorage.DivaToCoraPersonConverterTestHelper.assertRecordInfoPersonInDiva;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverterTestHelper.assertCorrectCreatedByUsingRecordInfoAndUserId;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverterTestHelper.assertCorrectIdUsingRecordInfoAndId;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverterTestHelper.assertCorrectTsCreatedUsingRecordInfoAndTsCreated;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverterTestHelper.assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverterTestHelper.assertCorrectUpdatedByUsingRecordInfoAndUserId;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverterTestHelper.assertRecordInfoPersonInDiva;
 
 import java.util.List;
 
@@ -33,6 +33,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.diva.tocorastorage.ParseException;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverter;
 
 public class DivaToCoraPersonConverterTest {
 
