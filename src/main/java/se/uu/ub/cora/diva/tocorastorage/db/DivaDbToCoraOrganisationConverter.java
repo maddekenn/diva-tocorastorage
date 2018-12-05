@@ -46,7 +46,7 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 	private void createAndAddName(Map<String, String> map, DataGroup organisation) {
 		String divaOrganisationName = map.get("defaultname");
 		organisation.addChild(
-				DataAtomic.withNameInDataAndValue("divaOrganisationName", divaOrganisationName));
+				DataAtomic.withNameInDataAndValue("organisationName", divaOrganisationName));
 	}
 
 	private void createAndAddAlternativeName(Map<String, String> map, DataGroup organisation) {
