@@ -86,8 +86,9 @@ public class DivaDbToCoraOrganisationConverterTest {
 	public void testAlternativeName() {
 		rowFromDb.put("alternative_name", "Java Faculty");
 		DataGroup organisation = converter.fromMap(rowFromDb);
-		assertTrue(organisation.containsChildWithNameInData("alternativeName"));
-		DataGroup alternativeName = organisation.getFirstGroupWithNameInData("alternativeName");
+		assertTrue(organisation.containsChildWithNameInData("organisationAlternativeName"));
+		DataGroup alternativeName = organisation
+				.getFirstGroupWithNameInData("organisationAlternativeName");
 		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("language"), "en");
 		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("organisationName"),
 				"Java Faculty");

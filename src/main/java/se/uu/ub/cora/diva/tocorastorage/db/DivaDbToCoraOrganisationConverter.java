@@ -50,7 +50,8 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 	}
 
 	private void createAndAddAlternativeName(Map<String, String> map, DataGroup organisation) {
-		DataGroup alternativeNameDataGroup = DataGroup.withNameInData("alternativeName");
+		DataGroup alternativeNameDataGroup = DataGroup
+				.withNameInData("organisationAlternativeName");
 		alternativeNameDataGroup.addChild(DataAtomic.withNameInDataAndValue("language", "en"));
 		String alternativeName = map.get(ALTERNATIVE_NAME);
 		alternativeNameDataGroup
