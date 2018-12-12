@@ -70,7 +70,7 @@ public class DivaDbToCoraOrganisationConverterTest {
 		rowFromDb.put("defaultname", "Java-fakulteten");
 		DataGroup organisation = converter.fromMap(rowFromDb);
 		assertEquals(organisation.getNameInData(), "divaOrganisation");
-		assertEquals(organisation.getFirstAtomicValueWithNameInData("divaOrganisationName"),
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("organisationName"),
 				"Java-fakulteten");
 	}
 
