@@ -9,61 +9,64 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 
 	private static final String ORGANISATION_ID = "id";
 	private static final String ALTERNATIVE_NAME = "alternative_name";
+	private Map<String, String> dbRow;
+	private DataGroup organisation;
 
 	@Override
-	public DataGroup fromMap(Map<String, String> map) {
-		if (organisationIsEmpty(map)) {
+	public DataGroup fromMap(Map<String, String> dbRow) {
+		this.dbRow = dbRow;
+		if (organisationIsEmpty()) {
 			throw ConversionException.withMessageAndException(
 					"Error converting organisation to Cora organisation: Map does not contain value for "
 							+ ORGANISATION_ID,
 					null);
 		}
-		return createDataGroup(map);
+		return createDataGroup();
 
 	}
 
-	private boolean organisationIsEmpty(Map<String, String> map) {
-		return !map.containsKey(ORGANISATION_ID) || "".equals(map.get(ORGANISATION_ID));
+	private boolean organisationIsEmpty() {
+		return !dbRow.containsKey(ORGANISATION_ID) || "".equals(dbRow.get(ORGANISATION_ID));
 	}
 
-	private DataGroup createDataGroup(Map<String, String> map) {
-		DataGroup organisation = createAndAddOrganisationWithRecordInfo(map);
-		createAndAddName(map, organisation);
-		createAndAddAlternativeName(map, organisation);
-		createAndAddOrganisationType(organisation);
-		createAndAddEligibility(map, organisation);
+	private DataGroup createDataGroup() {
+		createAndAddOrganisationWithRecordInfo();
+		createAndAddName();
+		createAndAddAlternativeName();
+		createAndAddOrganisationType();
+		createAndAddEligibility();
+		createAndAddAddress();
 		return organisation;
 	}
 
-	private DataGroup createAndAddOrganisationWithRecordInfo(Map<String, String> map) {
-		DataGroup organisation = DataGroup.withNameInData("organisation");
-		String id = map.get(ORGANISATION_ID);
+	private void createAndAddOrganisationWithRecordInfo() {
+		organisation = DataGroup.withNameInData("organisation");
+		String id = dbRow.get(ORGANISATION_ID);
 		DataGroup recordInfo = createRecordInfo(id);
 		organisation.addChild(recordInfo);
-		return organisation;
 	}
 
-	private void createAndAddName(Map<String, String> map, DataGroup organisation) {
-		String divaOrganisationName = map.get("defaultname");
+	private void createAndAddName() {
+		String divaOrganisationName = dbRow.get("defaultname");
 		organisation.addChild(
 				DataAtomic.withNameInDataAndValue("organisationName", divaOrganisationName));
 	}
 
-	private void createAndAddAlternativeName(Map<String, String> map, DataGroup organisation) {
+	private void createAndAddAlternativeName() {
 		DataGroup alternativeNameDataGroup = DataGroup.withNameInData("alternativeName");
 		alternativeNameDataGroup.addChild(DataAtomic.withNameInDataAndValue("language", "en"));
-		String alternativeName = map.get(ALTERNATIVE_NAME);
+		String alternativeName = dbRow.get(ALTERNATIVE_NAME);
 		alternativeNameDataGroup
 				.addChild(DataAtomic.withNameInDataAndValue("organisationName", alternativeName));
 		organisation.addChild(alternativeNameDataGroup);
 	}
 
-	private void createAndAddOrganisationType(DataGroup organisation) {
+	private void createAndAddOrganisationType() {
 		organisation.addChild(DataAtomic.withNameInDataAndValue("organisationType", "unit"));
 	}
 
-	private void createAndAddEligibility(Map<String, String> map, DataGroup organisation) {
-		String eligible = map.get("not_eligible");
+	private void createAndAddEligibility() {
+		String eligible = dbRow.get("not_eligible");
 		String coraEligible = isEligible(eligible) ? "yes" : "no";
 		organisation.addChild(DataAtomic.withNameInDataAndValue("eligible", coraEligible));
 	}
@@ -92,5 +95,20 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		dataDivider.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "system"));
 		dataDivider.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "diva"));
 		recordInfo.addChild(dataDivider);
+	}
+
+	private void createAndAddAddress() {
+		possiblyAddAtomicValueUsingKeyAndNameInData("city", "city");
+		possiblyAddAtomicValueUsingKeyAndNameInData("street", "street");
+		possiblyAddAtomicValueUsingKeyAndNameInData("box", "box");
+		possiblyAddAtomicValueUsingKeyAndNameInData("postnumber", "postcode");
+		possiblyAddAtomicValueUsingKeyAndNameInData("country_code", "country");
+	}
+
+	private void possiblyAddAtomicValueUsingKeyAndNameInData(String key, String nameInData) {
+		if (dbRow.containsKey(key)) {
+			String value = dbRow.get(key);
+			organisation.addChild(DataAtomic.withNameInDataAndValue(nameInData, value));
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package se.uu.ub.cora.diva.tocorastorage.db;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -118,6 +119,32 @@ public class DivaDbToCoraOrganisationConverterTest {
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordType"), "system");
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordId"), "diva");
 
+	}
+
+	@Test
+	public void testAdressMissing() {
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("city"));
+		assertFalse(organisation.containsChildWithNameInData("street"));
+		assertFalse(organisation.containsChildWithNameInData("box"));
+		assertFalse(organisation.containsChildWithNameInData("postcode"));
+		assertFalse(organisation.containsChildWithNameInData("country"));
+	}
+
+	@Test
+	public void testAdress() {
+		rowFromDb.put("city", "uppsala");
+		rowFromDb.put("street", "Övre slottsgatan 1");
+		rowFromDb.put("box", "Box5435");
+		rowFromDb.put("postnumber", "345 34");
+		rowFromDb.put("country_code", "sv");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("city"), "uppsala");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("street"),
+				"Övre slottsgatan 1");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("box"), "Box5435");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("postcode"), "345 34");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("country"), "sv");
 	}
 
 }
