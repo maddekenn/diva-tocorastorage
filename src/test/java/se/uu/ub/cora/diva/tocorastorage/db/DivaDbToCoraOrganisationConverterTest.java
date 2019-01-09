@@ -154,6 +154,20 @@ public class DivaDbToCoraOrganisationConverterTest {
 	}
 
 	@Test
+	public void testOrganisationNumberIsnull() {
+		rowFromDb.put("orgnumber", null);
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("organisationNumber"));
+	}
+
+	@Test
+	public void testOrganisationNumberIsEmpty() {
+		rowFromDb.put("orgnumber", "");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("organisationNumber"));
+	}
+
+	@Test
 	public void testOrganisationNumber() {
 		rowFromDb.put("orgnumber", "540002");
 		DataGroup organisation = converter.fromMap(rowFromDb);
@@ -168,6 +182,20 @@ public class DivaDbToCoraOrganisationConverterTest {
 	}
 
 	@Test
+	public void testOrganisationCodeIsNull() {
+		rowFromDb.put("organisation_code", null);
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("organisationCode"));
+	}
+
+	@Test
+	public void testOrganisationCodeIsEmpty() {
+		rowFromDb.put("organisation_code", "");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("organisationCode"));
+	}
+
+	@Test
 	public void testOrganisationCode() {
 		rowFromDb.put("organisation_code", "56783545");
 		DataGroup organisation = converter.fromMap(rowFromDb);
@@ -177,6 +205,20 @@ public class DivaDbToCoraOrganisationConverterTest {
 
 	@Test
 	public void testOrganisationUrlMissing() {
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("URL"));
+	}
+
+	@Test
+	public void testOrganisationUrlIsNull() {
+		rowFromDb.put("organisation_homepage", null);
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("URL"));
+	}
+
+	@Test
+	public void testOrganisationUrlIsEmpty() {
+		rowFromDb.put("organisation_homepage", "");
 		DataGroup organisation = converter.fromMap(rowFromDb);
 		assertFalse(organisation.containsChildWithNameInData("URL"));
 	}

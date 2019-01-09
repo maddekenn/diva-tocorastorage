@@ -109,10 +109,18 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 	}
 
 	private void possiblyAddAtomicValueUsingKeyAndNameInData(String key, String nameInData) {
-		if (dbRow.containsKey(key)) {
+		if (valueExistsForKey(key)) {
 			String value = dbRow.get(key);
 			organisation.addChild(DataAtomic.withNameInDataAndValue(nameInData, value));
 		}
+	}
+
+	private boolean valueExistsForKey(String key) {
+		return dbRow.containsKey(key) && valueForKeyHoldsNonEmptyData(key);
+	}
+
+	private boolean valueForKeyHoldsNonEmptyData(String key) {
+		return dbRow.get(key) != null && !"".equals(dbRow.get(key));
 	}
 
 	private void possiblyCreateAndAddOrganisationNumber() {
