@@ -147,4 +147,45 @@ public class DivaDbToCoraOrganisationConverterTest {
 		assertEquals(organisation.getFirstAtomicValueWithNameInData("country"), "sv");
 	}
 
+	@Test
+	public void testOrganisationNumberMissing() {
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("organisationNumber"));
+	}
+
+	@Test
+	public void testOrganisationNumber() {
+		rowFromDb.put("orgnumber", "540002");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("organisationNumber"),
+				"540002");
+	}
+
+	@Test
+	public void testOrganisationCodeMissing() {
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("organisationCode"));
+	}
+
+	@Test
+	public void testOrganisationCode() {
+		rowFromDb.put("organisation_code", "56783545");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("organisationCode"),
+				"56783545");
+	}
+
+	@Test
+	public void testOrganisationUrlMissing() {
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertFalse(organisation.containsChildWithNameInData("URL"));
+	}
+
+	@Test
+	public void testOrganisationURL() {
+		rowFromDb.put("organisation_homepage", "www.something.org");
+		DataGroup organisation = converter.fromMap(rowFromDb);
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("URL"), "www.something.org");
+	}
+
 }

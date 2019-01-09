@@ -35,7 +35,10 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		createAndAddAlternativeName();
 		createAndAddOrganisationType();
 		createAndAddEligibility();
-		createAndAddAddress();
+		possiblyCeateAndAddAddress();
+		possiblyCreateAndAddOrganisationNumber();
+		possiblyCreateAndAddOrganisationCode();
+		possiblyCreateAndAddURL();
 		return organisation;
 	}
 
@@ -97,7 +100,7 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		recordInfo.addChild(dataDivider);
 	}
 
-	private void createAndAddAddress() {
+	private void possiblyCeateAndAddAddress() {
 		possiblyAddAtomicValueUsingKeyAndNameInData("city", "city");
 		possiblyAddAtomicValueUsingKeyAndNameInData("street", "street");
 		possiblyAddAtomicValueUsingKeyAndNameInData("box", "box");
@@ -111,4 +114,17 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 			organisation.addChild(DataAtomic.withNameInDataAndValue(nameInData, value));
 		}
 	}
+
+	private void possiblyCreateAndAddOrganisationNumber() {
+		possiblyAddAtomicValueUsingKeyAndNameInData("orgnumber", "organisationNumber");
+	}
+
+	private void possiblyCreateAndAddOrganisationCode() {
+		possiblyAddAtomicValueUsingKeyAndNameInData("organisation_code", "organisationCode");
+	}
+
+	private void possiblyCreateAndAddURL() {
+		possiblyAddAtomicValueUsingKeyAndNameInData("organisation_homepage", "URL");
+	}
+
 }
