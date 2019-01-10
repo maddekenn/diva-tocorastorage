@@ -10,6 +10,7 @@ import se.uu.ub.cora.sqldatabase.RecordReader;
 public class RecordReaderSpy implements RecordReader {
 
 	public String usedTableName;
+	public List<String> usedTableNames = new ArrayList<>();
 	public List<Map<String, String>> returnedList;
 	public int noOfRecordsToReturn = 1;
 	public Map<String, String> usedConditions;
@@ -17,6 +18,7 @@ public class RecordReaderSpy implements RecordReader {
 	@Override
 	public List<Map<String, String>> readAllFromTable(String tableName) {
 		usedTableName = tableName;
+		usedTableNames.add(usedTableName);
 		returnedList = new ArrayList<>();
 		for (int i = 0; i < noOfRecordsToReturn; i++) {
 			Map<String, String> map = new HashMap<>();
@@ -30,6 +32,7 @@ public class RecordReaderSpy implements RecordReader {
 	public Map<String, String> readOneRowFromDbUsingTableAndConditions(String tableName,
 			Map<String, String> conditions) {
 		usedTableName = tableName;
+		usedTableNames.add(usedTableName);
 		usedConditions = conditions;
 		Map<String, String> map = new HashMap<>();
 		map.put("someKey", "someValue");

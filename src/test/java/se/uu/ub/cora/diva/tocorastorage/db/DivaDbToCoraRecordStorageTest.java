@@ -70,10 +70,13 @@ public class DivaDbToCoraRecordStorageTest {
 	}
 
 	@Test
-	public void testReadOrgansiationCountryTableRequestedFromReader() throws Exception {
+	public void testReadOrgansiationTableRequestedFromReader() throws Exception {
 		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
 		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		assertEquals(recordReader.usedTableName, TABLE_NAME);
+		assertEquals(recordReader.usedTableNames.get(0), TABLE_NAME);
+		assertEquals(recordReader.usedTableNames.get(1), "divaOrganisationPredecessors");
+
+		assertEquals(recordReader.usedTableNames.size(), 2);
 	}
 
 	@Test
