@@ -83,7 +83,7 @@ public class DivaDbToCoraRecordStorageTest {
 	public void testReadOrganisationConditionsForOrganisationTable() throws Exception {
 		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
 		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		Map<String, String> conditions = recordReader.usedConditions;
+		Map<String, String> conditions = recordReader.usedConditionsList.get(0);
 		assertEquals(conditions.get("id"), "someId");
 	}
 
@@ -105,15 +105,52 @@ public class DivaDbToCoraRecordStorageTest {
 	}
 
 	@Test
-	public void testReadOrganisationCallsDatabaseAndReturnsConvertedResult() throws Exception {
-		DataGroup readCountry = divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+	public void testReadOrganisationCallsDatabaseAndReturnsConvertedResultNoPredecessors()
+			throws Exception {
+		DataGroup convertedOrganisation = divaToCoraRecordStorage.read(TABLE_NAME, "someId");
 		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+		DivaDbToCoraConverterSpy organisationConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
 				.get(0);
 		assertEquals(recordReader.returnedList.size(), 1);
-		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
-		assertEquals(readCountry, divaDbToCoraConverter.convertedDbDataGroup);
+		assertEquals(converterFactory.factoredTypes.get(0), "divaOrganisation");
+
+		Map<String, String> firstReadResult = recordReader.returnedList.get(0);
+		Map<String, String> firstMapSentToConverter = organisationConverter.mapToConvert;
+		assertEquals(firstReadResult, firstMapSentToConverter);
+
+		assertEquals(converterFactory.factoredTypes.size(), 1);
+
+		assertEquals(convertedOrganisation, organisationConverter.convertedDbDataGroup);
 	}
+
+	// @Test
+	// public void
+	// testReadOrganisationCallsDatabaseAndReturnsConvertedResultWithPredecessors()
+	// throws Exception {
+	// DataGroup convertedOrganisation = divaToCoraRecordStorage.read(TABLE_NAME,
+	// "someId");
+	// RecordReaderSpy recordReader = recordReaderFactory.factored;
+	// DivaDbToCoraConverterSpy organisationConverter = (DivaDbToCoraConverterSpy)
+	// converterFactory.factoredConverters
+	// .get(0);
+	// assertEquals(recordReader.returnedList.size(), 2);
+	// assertEquals(converterFactory.factoredTypes.get(0), "divaOrganisation");
+	//
+	// Map<String, String> firstReadResult = recordReader.returnedList.get(0);
+	// Map<String, String> firstMapSentToConverter =
+	// organisationConverter.mapToConvert;
+	// assertEquals(firstReadResult, firstMapSentToConverter);
+	//
+	// assertEquals(converterFactory.factoredTypes.get(1),
+	// "divaOrganisationPredecessor");
+	// DivaDbToCoraConverterSpy predecessorConverter = (DivaDbToCoraConverterSpy)
+	// converterFactory.factoredConverters
+	// .get(1);
+	//
+	// // kommer inte att vara samma längre, eftersom vi ska lägga på predecessors
+	// assertEquals(convertedOrganisation,
+	// organisationConverter.convertedDbDataGroup);
+	// }
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
 			+ "create is not implemented")

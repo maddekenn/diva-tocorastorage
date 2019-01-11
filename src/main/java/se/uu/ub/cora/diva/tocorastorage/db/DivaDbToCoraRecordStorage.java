@@ -39,12 +39,16 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 
 			// read * from view
 			//
-			// List<Map<String, String>> predecessors = recordReader
-			// .readAllFromTable("divaOrganisationPredecessors");
+			List<Map<String, String>> predecessors = recordReader
+					.readFromTableUsingConditions("divaOrganisationPredecessors", null);
 
 			// ta ut de som hör till organisationen
 			// convertera
-			// lägg till dem i organisationen
+			if (predecessors != null && !predecessors.isEmpty()) {
+				DivaDbToCoraConverter dbToCoraConverter = converterFactory
+						.factor("divaOrganisationPredecessor");
+				// lägg till dem i organisationen
+			}
 
 			// readConvertAndAddPredecessorsToOrganisation
 			return organisation;
