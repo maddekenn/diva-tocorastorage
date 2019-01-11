@@ -12,7 +12,7 @@ public class RecordReaderSpy implements RecordReader {
 
 	public String usedTableName;
 	public List<String> usedTableNames = new ArrayList<>();
-	public List<Map<String, String>> returnedList = new ArrayList<>();;
+	public List<Map<String, String>> returnedList = new ArrayList<>();
 	public int noOfRecordsToReturn = 1;
 	public Map<String, String> usedConditions;
 	public List<Map<String, String>> usedConditionsList = new ArrayList<>();
@@ -55,13 +55,14 @@ public class RecordReaderSpy implements RecordReader {
 		if (!returnPredecessors) {
 			return Collections.emptyList();
 		}
-		// returnedList = new ArrayList<>();
+		List<Map<String, String>> listToReturn = new ArrayList<>();
 		for (int i = 0; i < noOfRecordsToReturn; i++) {
 			Map<String, String> map = new HashMap<>();
 			map.put("someKey" + i, "someValue" + i);
 			returnedList.add(map);
+			listToReturn.add(map);
 		}
-		return returnedList;
+		return listToReturn;
 	}
 
 }
