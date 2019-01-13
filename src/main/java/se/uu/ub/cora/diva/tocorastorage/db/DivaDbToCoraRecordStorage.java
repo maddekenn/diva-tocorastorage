@@ -37,28 +37,12 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 			recordReader = recordReaderFactory.factor();
 			DataGroup organisation = readAndConvertOrganisationFromDb(type, id);
 
-			// read * from view
-			// conditions sak vara
 			Map<String, String> conditions = new HashMap<>();
 			conditions.put("organisation_id", id);
 			List<Map<String, String>> predecessors = recordReader
 					.readFromTableUsingConditions("divaOrganisationPredecessors", conditions);
 
-			// ta ut de som hör till organisationen
-			// convertera
-			if (predecessors != null && !predecessors.isEmpty()) {
-				int repeatId = 0;
-				for (Map<String, String> predecessorValues : predecessors) {
-					DivaDbToCoraConverter predecessorConverter = converterFactory
-							.factor("divaOrganisationPredecessor");
-					DataGroup predecessor = predecessorConverter.fromMap(predecessorValues);
-					predecessor.setRepeatId(String.valueOf(repeatId));
-					organisation.addChild(predecessor);
-					repeatId++;
-					// för varje - konvertera och lägg till i organisationen
-					// lägg till dem i organisationen
-				}
-			}
+			possiblyConvertPredecessors(organisation, predecessors);
 
 			// readConvertAndAddPredecessorsToOrganisation
 			return organisation;
@@ -81,6 +65,35 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 	private DataGroup convertOneMapFromDbToDataGroup(String type, Map<String, String> readRow) {
 		DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
 		return dbToCoraConverter.fromMap(readRow);
+	}
+
+	private void possiblyConvertPredecessors(DataGroup organisation,
+			List<Map<String, String>> predecessors) {
+		if (organisationHasPredecessors(predecessors)) {
+			convertAndAddPredecessors(organisation, predecessors);
+		}
+	}
+
+	private boolean organisationHasPredecessors(List<Map<String, String>> predecessors) {
+		return predecessors != null && !predecessors.isEmpty();
+	}
+
+	private void convertAndAddPredecessors(DataGroup organisation,
+			List<Map<String, String>> predecessors) {
+		int repeatId = 0;
+		for (Map<String, String> predecessorValues : predecessors) {
+			convertAndAddPredecessor(organisation, repeatId, predecessorValues);
+			repeatId++;
+		}
+	}
+
+	private void convertAndAddPredecessor(DataGroup organisation, int repeatId,
+			Map<String, String> predecessorValues) {
+		DivaDbToCoraConverter predecessorConverter = converterFactory
+				.factor("divaOrganisationPredecessor");
+		DataGroup predecessor = predecessorConverter.fromMap(predecessorValues);
+		predecessor.setRepeatId(String.valueOf(repeatId));
+		organisation.addChild(predecessor);
 	}
 
 	@Override
