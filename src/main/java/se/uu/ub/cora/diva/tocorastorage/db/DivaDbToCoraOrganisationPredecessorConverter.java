@@ -25,8 +25,15 @@ public class DivaDbToCoraOrganisationPredecessorConverter implements DivaDbToCor
 	}
 
 	private boolean predecessorIsMissingMandatoryValues() {
-		return !dbRow.containsKey(ORGANISATION_ID) || "".equals(dbRow.get(ORGANISATION_ID))
-				|| !dbRow.containsKey(PREDECESSOR_ID) || "".equals(dbRow.get(PREDECESSOR_ID));
+		return organisationIdIsMissing() || predecessorIdIsMissing();
+	}
+
+	private boolean organisationIdIsMissing() {
+		return !dbRow.containsKey(ORGANISATION_ID) || "".equals(dbRow.get(ORGANISATION_ID));
+	}
+
+	private boolean predecessorIdIsMissing() {
+		return !dbRow.containsKey(PREDECESSOR_ID) || "".equals(dbRow.get(PREDECESSOR_ID));
 	}
 
 	private DataGroup createDataGroup() {

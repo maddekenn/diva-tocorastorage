@@ -7,6 +7,7 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter {
 
+	private static final String ORGANISATION_PARENTID = "organisation_parentid";
 	private static final String ORGANISATION_ID = "id";
 	private static final String ALTERNATIVE_NAME = "alternative_name";
 	private Map<String, String> dbRow;
@@ -39,6 +40,9 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		possiblyCreateAndAddOrganisationNumber();
 		possiblyCreateAndAddOrganisationCode();
 		possiblyCreateAndAddURL();
+
+		possiblyAddParentOrganisation();
+
 		return organisation;
 	}
 
@@ -87,17 +91,23 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 	}
 
 	private void createAndAddType(DataGroup recordInfo) {
-		DataGroup type = DataGroup.withNameInData("type");
-		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		type.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "divaOrganisation"));
+		DataGroup type = createLinkUsingNameInDataRecordTypeAndRecordId("type", "recordType",
+				"divaOrganisation");
 		recordInfo.addChild(type);
 	}
 
 	private void createAndAddDataDivider(DataGroup recordInfo) {
-		DataGroup dataDivider = DataGroup.withNameInData("dataDivider");
-		dataDivider.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "system"));
-		dataDivider.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "diva"));
+		DataGroup dataDivider = createLinkUsingNameInDataRecordTypeAndRecordId("dataDivider",
+				"system", "diva");
 		recordInfo.addChild(dataDivider);
+	}
+
+	private DataGroup createLinkUsingNameInDataRecordTypeAndRecordId(String nameInData,
+			String linkedRecordType, String linkedRecordId) {
+		DataGroup linkGroup = DataGroup.withNameInData(nameInData);
+		linkGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
+		linkGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		return linkGroup;
 	}
 
 	private void possiblyCeateAndAddAddress() {
@@ -133,6 +143,21 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 
 	private void possiblyCreateAndAddURL() {
 		possiblyAddAtomicValueUsingKeyAndNameInData("organisation_homepage", "URL");
+	}
+
+	private void possiblyAddParentOrganisation() {
+		if (valueExistsForKey(ORGANISATION_PARENTID)) {
+			DataGroup parentOrg = DataGroup.withNameInData("parentOrganisation");
+			createAndAddLinkToParentOrganisation(parentOrg);
+			organisation.addChild(parentOrg);
+		}
+	}
+
+	private void createAndAddLinkToParentOrganisation(DataGroup parentOrg) {
+		String parentId = dbRow.get(ORGANISATION_PARENTID);
+		DataGroup parentOrgLink = createLinkUsingNameInDataRecordTypeAndRecordId(
+				"organisationLink", "divaOrganisation", parentId);
+		parentOrg.addChild(parentOrgLink);
 	}
 
 }

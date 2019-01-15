@@ -37,18 +37,25 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 			recordReader = recordReaderFactory.factor();
 			DataGroup organisation = readAndConvertOrganisationFromDb(type, id);
 
+			tryToReadAndConvertPredecessors(id, organisation);
 			Map<String, String> conditions = new HashMap<>();
-			conditions.put("organisation_id", id);
-			List<Map<String, String>> predecessors = recordReader
+			conditions.put("predecessor_id", id);
+			List<Map<String, String>> successors = recordReader
 					.readFromTableUsingConditions("divaOrganisationPredecessors", conditions);
 
-			possiblyConvertPredecessors(organisation, predecessors);
-
-			// readConvertAndAddPredecessorsToOrganisation
 			return organisation;
 
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);
+	}
+
+	private void tryToReadAndConvertPredecessors(String id, DataGroup organisation) {
+		Map<String, String> conditions = new HashMap<>();
+		conditions.put("organisation_id", id);
+		List<Map<String, String>> predecessors = recordReader
+				.readFromTableUsingConditions("divaOrganisationPredecessors", conditions);
+
+		possiblyConvertPredecessors(organisation, predecessors);
 	}
 
 	private DataGroup readAndConvertOrganisationFromDb(String type, String id) {

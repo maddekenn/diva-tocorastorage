@@ -1,7 +1,6 @@
 package se.uu.ub.cora.diva.tocorastorage.db;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,14 @@ public class RecordReaderSpy implements RecordReader {
 	public int noOfRecordsToReturn = 1;
 	public Map<String, String> usedConditions;
 	public List<Map<String, String>> usedConditionsList = new ArrayList<>();
-	public boolean returnPredecessors = false;
+	public int numOfOredecessorsToReturn = 0;
+	public int numOfSuccessorsToReturn = 0;
+	// public boolean returnPredecessors = false;
+	// public boolean returnSuccessors = false;
+
+	public Map<String, String> onwRowRead;
+	public List<Map<String, String>> predecessorsToReturn = new ArrayList<>();
+	public List<Map<String, String>> successorsToReturn = new ArrayList<>();
 
 	@Override
 	public List<Map<String, String>> readAllFromTable(String tableName) {
@@ -41,6 +47,7 @@ public class RecordReaderSpy implements RecordReader {
 		Map<String, String> map = new HashMap<>();
 		map.put("someKey", "someValue");
 		// returnedList = new ArrayList<>();
+		onwRowRead = map;
 		returnedList.add(map);
 		return map;
 	}
@@ -52,11 +59,33 @@ public class RecordReaderSpy implements RecordReader {
 		usedTableNames.add(usedTableName);
 		usedConditions = conditions;
 		usedConditionsList.add(usedConditions);
-		if (!returnPredecessors) {
-			return Collections.emptyList();
-		}
+
+		predecessorsToReturn = createListToReturn(numOfOredecessorsToReturn);
+		successorsToReturn = createListToReturn(numOfSuccessorsToReturn);
+
 		List<Map<String, String>> listToReturn = new ArrayList<>();
-		for (int i = 0; i < noOfRecordsToReturn; i++) {
+		listToReturn.addAll(predecessorsToReturn);
+		listToReturn.addAll(successorsToReturn);
+
+		// if (numOfOredecessorsToReturn == 0) {
+		//
+		// predecessorsToReturn = Collections.emptyList();
+		// return predecessorsToReturn;
+		// } else {
+		// }
+		// if (numOfSuccessorsToReturn == 0) {
+		// successorsToReturn = Collections.emptyList();
+		// return successorsToReturn;
+		// } else {
+		// }
+		// List<Map<String, String>> listToReturn =
+		// createListToReturn(noOfRecordsToReturn);
+		return listToReturn;
+	}
+
+	private List<Map<String, String>> createListToReturn(int numToReturn) {
+		List<Map<String, String>> listToReturn = new ArrayList<>();
+		for (int i = 0; i < numToReturn; i++) {
 			Map<String, String> map = new HashMap<>();
 			map.put("someKey" + i, "someValue" + i);
 			returnedList.add(map);

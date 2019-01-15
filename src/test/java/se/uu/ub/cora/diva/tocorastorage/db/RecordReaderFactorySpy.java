@@ -8,13 +8,15 @@ public class RecordReaderFactorySpy implements RecordReaderFactory {
 	public boolean factorWasCalled;
 	public RecordReaderSpy factored;
 	public int noOfRecordsToReturn = 1;
-	public boolean returnPredecessors = false;
+	// public boolean returnPredecessors = false;
+	public int numOfOredecessorsToReturn = 0;
+	public int numOfSuccessorsToReturn = 0;
 
 	@Override
 	public RecordReader factor() {
 		factorWasCalled = true;
 		factored = new RecordReaderSpy();
-		factored.returnPredecessors = returnPredecessors;
+		factored.numOfOredecessorsToReturn = numOfOredecessorsToReturn;
 		factored.noOfRecordsToReturn = noOfRecordsToReturn;
 		return factored;
 	}
