@@ -17,8 +17,6 @@ public class RecordReaderSpy implements RecordReader {
 	public List<Map<String, String>> usedConditionsList = new ArrayList<>();
 	public int numOfOredecessorsToReturn = 0;
 	public int numOfSuccessorsToReturn = 0;
-	// public boolean returnPredecessors = false;
-	// public boolean returnSuccessors = false;
 
 	public Map<String, String> onwRowRead;
 	public List<Map<String, String>> predecessorsToReturn = new ArrayList<>();
@@ -46,7 +44,6 @@ public class RecordReaderSpy implements RecordReader {
 		usedConditionsList.add(usedConditions);
 		Map<String, String> map = new HashMap<>();
 		map.put("someKey", "someValue");
-		// returnedList = new ArrayList<>();
 		onwRowRead = map;
 		returnedList.add(map);
 		return map;
@@ -80,7 +77,10 @@ public class RecordReaderSpy implements RecordReader {
 		// }
 		// List<Map<String, String>> listToReturn =
 		// createListToReturn(noOfRecordsToReturn);
-		return listToReturn;
+		if(conditions.containsKey("organisation_id")) {
+			return predecessorsToReturn;
+		}
+		return successorsToReturn;
 	}
 
 	private List<Map<String, String>> createListToReturn(int numToReturn) {

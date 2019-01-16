@@ -5,35 +5,21 @@ import java.util.Map;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class DivaDbToCoraOrganisationPredecessorConverter implements DivaDbToCoraConverter {
+public class DivaDbToCoraOrganisationPredecessorConverter
+		extends DivaDbToCoraOrganisationAncestryConverter implements DivaDbToCoraConverter {
 
 	private static final String DESCRIPTION = "description";
-	private static final String PREDECESSOR_ID = "predecessorid";
-	private static final String ORGANISATION_ID = "id";
-	private Map<String, String> dbRow;
 
 	@Override
 	public DataGroup fromMap(Map<String, String> dbRow) {
 		this.dbRow = dbRow;
-		if (predecessorIsMissingMandatoryValues()) {
+		if (mandatoryValuesAreMissing()) {
 			throw ConversionException.withMessageAndException(
 					"Error converting organisation predecessor to Cora organisation predecessor: Map does not "
 							+ "contain mandatory values for organisation id and prdecessor id",
 					null);
 		}
 		return createDataGroup();
-	}
-
-	private boolean predecessorIsMissingMandatoryValues() {
-		return organisationIdIsMissing() || predecessorIdIsMissing();
-	}
-
-	private boolean organisationIdIsMissing() {
-		return !dbRow.containsKey(ORGANISATION_ID) || "".equals(dbRow.get(ORGANISATION_ID));
-	}
-
-	private boolean predecessorIdIsMissing() {
-		return !dbRow.containsKey(PREDECESSOR_ID) || "".equals(dbRow.get(PREDECESSOR_ID));
 	}
 
 	private DataGroup createDataGroup() {

@@ -42,7 +42,17 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 			conditions.put("predecessor_id", id);
 			List<Map<String, String>> successors = recordReader
 					.readFromTableUsingConditions("divaOrganisationPredecessors", conditions);
-
+			if (!successors.isEmpty()) {
+				int repeatId = 0;
+				for (Map<String, String> successorsValues : successors) {
+					DivaDbToCoraConverter successorsConverter = converterFactory
+							.factor("divaOrganisationSuccessor");
+					DataGroup convertedSuccessor = successorsConverter.fromMap(successorsValues);
+					convertedSuccessor.setRepeatId(String.valueOf(repeatId));
+					organisation.addChild(convertedSuccessor);
+					repeatId++;
+				}
+			}
 			return organisation;
 
 		}
