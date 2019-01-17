@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,7 @@
 package se.uu.ub.cora.diva.tocorastorage.db;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -125,7 +126,6 @@ public class DivaDbToCoraRecordStorageTest {
 
 	private void assertCorrectTableNamesAndConditionsAreUsedWhenReading(
 			RecordReaderSpy recordReader) {
-		// assertEquals(recordReader.returnedList.size(), 1);
 		List<Map<String, String>> usedConditionsList = recordReader.usedConditionsList;
 
 		assertEquals(recordReader.usedTableNames.get(0), "divaOrganisation");
@@ -136,6 +136,28 @@ public class DivaDbToCoraRecordStorageTest {
 
 		assertEquals(recordReader.usedTableNames.get(2), "divaOrganisationPredecessors");
 		assertEquals(usedConditionsList.get(2).get("predecessor_id"), "someId");
+	}
+
+	@Test
+	public void testReadOrganisationCallsDatabaseAndReturnsConvertedResultWithNullPredecessorsAndSuccessors()
+			throws Exception {
+		recordReaderFactory.numOfPredecessorsToReturn = -1;
+		DataGroup convertedOrganisation = divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+		RecordReaderSpy recordReader = recordReaderFactory.factored;
+
+		assertCorrectTableNamesAndConditionsAreUsedWhenReading(recordReader);
+
+		assertEquals(converterFactory.factoredTypes.get(0), "divaOrganisation");
+		assertEquals(converterFactory.factoredTypes.size(), 1);
+
+		DivaDbToCoraConverterSpy organisationConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
+				.get(0);
+		Map<String, String> readOrganisation = recordReader.onwRowRead;
+		Map<String, String> mapSentToFirstConverter = organisationConverter.mapToConvert;
+		assertEquals(readOrganisation, mapSentToFirstConverter);
+
+		assertFalse(convertedOrganisation.containsChildWithNameInData("from Db converter"));
+
 	}
 
 	@Test

@@ -1,5 +1,25 @@
+/*
+ * Copyright 2019 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.diva.tocorastorage.db;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 
 import java.util.HashMap;
@@ -56,53 +76,47 @@ public class DivaDbToCoraOrganisationSuccessorConverterTest {
 		converter.fromMap(rowFromDb);
 	}
 
-	// @Test
-	// public void testMinimalValuesReturnsDataGroupWithCorrectStructure() {
-	// DataGroup predecessor = converter.fromMap(rowFromDb);
-	// assertEquals(predecessor.getNameInData(), "formerName");
-	// DataGroup linkedOrganisation =
-	// predecessor.getFirstGroupWithNameInData("organisationLink");
-	//
-	// assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordType"),
-	// "divaOrganisation");
-	// assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordId"),
-	// "somePredecessorId");
-	// assertFalse(predecessor.containsChildWithNameInData("organisationComment"));
-	// }
-	//
-	// @Test
-	// public void
-	// testMinimalValuesWithEmptyValueForDescriptionReturnsDataGroupWithCorrectStructure()
-	// {
-	// rowFromDb.put("description", "");
-	// DataGroup predecessor = converter.fromMap(rowFromDb);
-	// assertEquals(predecessor.getNameInData(), "formerName");
-	// DataGroup linkedOrganisation =
-	// predecessor.getFirstGroupWithNameInData("organisationLink");
-	//
-	// assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordType"),
-	// "divaOrganisation");
-	// assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordId"),
-	// "somePredecessorId");
-	// assertFalse(predecessor.containsChildWithNameInData("organisationComment"));
-	// }
-	//
-	// @Test
-	// public void testCompleteValuesReturnsDataGroupWithCorrectStructure() {
-	// rowFromDb.put("description", "some description text");
-	// DataGroup predecessor = converter.fromMap(rowFromDb);
-	// assertEquals(predecessor.getNameInData(), "formerName");
-	// DataGroup linkedOrganisation =
-	// predecessor.getFirstGroupWithNameInData("organisationLink");
-	//
-	// assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordType"),
-	// "divaOrganisation");
-	// assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordId"),
-	// "somePredecessorId");
-	//
-	// assertEquals(predecessor.getFirstAtomicValueWithNameInData("organisationComment"),
-	// "some description text");
-	//
-	// }
+	@Test
+	public void testMinimalValuesReturnsDataGroupWithCorrectStructure() {
+		DataGroup successor = converter.fromMap(rowFromDb);
+		assertEquals(successor.getNameInData(), "closed");
+		DataGroup linkedOrganisation = successor.getFirstGroupWithNameInData("organisationLink");
+
+		assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordType"),
+				"divaOrganisation");
+		assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"someOrgId");
+		assertFalse(successor.containsChildWithNameInData("closedDate"));
+	}
+
+	@Test
+	public void testMinimalValuesWithEmptyValueForDescriptionReturnsDataGroupWithCorrectStructure() {
+		rowFromDb.put("closed_date", "");
+		DataGroup predecessor = converter.fromMap(rowFromDb);
+		assertEquals(predecessor.getNameInData(), "closed");
+		DataGroup linkedOrganisation = predecessor.getFirstGroupWithNameInData("organisationLink");
+
+		assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordType"),
+				"divaOrganisation");
+		assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"someOrgId");
+		assertFalse(predecessor.containsChildWithNameInData("closedDate"));
+	}
+
+	@Test
+	public void testCompleteValuesReturnsDataGroupWithCorrectStructure() {
+		rowFromDb.put("closed_date", "2018-12-31");
+		DataGroup predecessor = converter.fromMap(rowFromDb);
+		assertEquals(predecessor.getNameInData(), "closed");
+		DataGroup linkedOrganisation = predecessor.getFirstGroupWithNameInData("organisationLink");
+
+		assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordType"),
+				"divaOrganisation");
+		assertEquals(linkedOrganisation.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"someOrgId");
+
+		assertEquals(predecessor.getFirstAtomicValueWithNameInData("closedDate"), "2018-12-31");
+
+	}
 
 }

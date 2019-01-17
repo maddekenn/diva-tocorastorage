@@ -1,3 +1,21 @@
+/*
+ * Copyright 2018, 2019 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.diva.tocorastorage.db;
 
 import java.util.ArrayList;
@@ -15,7 +33,7 @@ public class RecordReaderSpy implements RecordReader {
 	public int noOfRecordsToReturn = 1;
 	public Map<String, String> usedConditions;
 	public List<Map<String, String>> usedConditionsList = new ArrayList<>();
-	public int numOfOredecessorsToReturn = 0;
+	public int numOfPredecessorsToReturn = 0;
 	public int numOfSuccessorsToReturn = 0;
 
 	public Map<String, String> onwRowRead;
@@ -56,8 +74,10 @@ public class RecordReaderSpy implements RecordReader {
 		usedTableNames.add(usedTableName);
 		usedConditions = conditions;
 		usedConditionsList.add(usedConditions);
-
-		predecessorsToReturn = createListToReturn(numOfOredecessorsToReturn);
+		if (numOfPredecessorsToReturn == -1 || numOfSuccessorsToReturn == -1) {
+			return null;
+		}
+		predecessorsToReturn = createListToReturn(numOfPredecessorsToReturn);
 		successorsToReturn = createListToReturn(numOfSuccessorsToReturn);
 
 		List<Map<String, String>> listToReturn = new ArrayList<>();
@@ -77,7 +97,7 @@ public class RecordReaderSpy implements RecordReader {
 		// }
 		// List<Map<String, String>> listToReturn =
 		// createListToReturn(noOfRecordsToReturn);
-		if(conditions.containsKey("organisation_id")) {
+		if (conditions.containsKey("organisation_id")) {
 			return predecessorsToReturn;
 		}
 		return successorsToReturn;

@@ -1,3 +1,21 @@
+/*
+ * Copyright 2019 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.diva.tocorastorage.db;
 
 import java.util.Map;
@@ -30,11 +48,8 @@ public class DivaDbToCoraOrganisationPredecessorConverter
 	}
 
 	private void addPredecessorLink(DataGroup formerName) {
-		DataGroup predecessor = DataGroup.withNameInData("organisationLink");
-		predecessor.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordType", "divaOrganisation"));
-		predecessor.addChild(
-				DataAtomic.withNameInDataAndValue("linkedRecordId", dbRow.get(PREDECESSOR_ID)));
+		DataGroup predecessor = createOrganisationLinkUsingLinkedRecordId(
+				dbRow.get(PREDECESSOR_ID));
 		formerName.addChild(predecessor);
 	}
 
@@ -46,6 +61,6 @@ public class DivaDbToCoraOrganisationPredecessorConverter
 	}
 
 	private boolean predecessorHasDescription() {
-		return dbRow.containsKey(DESCRIPTION) && !"".equals(dbRow.get(DESCRIPTION));
+		return dbRowHasValueForKey(DESCRIPTION);
 	}
 }
