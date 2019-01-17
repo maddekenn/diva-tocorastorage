@@ -62,8 +62,12 @@ public class RecordReaderSpy implements RecordReader {
 		usedConditionsList.add(usedConditions);
 		Map<String, String> map = new HashMap<>();
 		map.put("someKey", "someValue");
-		if (conditions.containsKey("id") && conditions.get("id").equals("someIdWithClosedDate")) {
-			map.put("closed_date", "2018-12-31");
+		if (conditions.containsKey("id")) {
+			if (conditions.get("id").equals("someIdWithClosedDate")) {
+				map.put("closed_date", "2018-12-31");
+			} else if (conditions.get("id").equals("someIdWithEmptyClosedDate")) {
+				map.put("closed_date", "");
+			}
 		}
 		oneRowRead = map;
 		returnedList.add(map);
