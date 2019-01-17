@@ -24,8 +24,8 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class DivaDbToCoraOrganisationAncestryConverter {
-	protected static final String PREDECESSOR_ID = "predecessorid";
-	private static final String ORGANISATION_ID = "id";
+	protected static final String PREDECESSOR_ID = "predecessor_id";
+	protected static final String ORGANISATION_ID = "organisation_id";
 	protected Map<String, String> dbRow;
 
 	protected boolean mandatoryValuesAreMissing() {

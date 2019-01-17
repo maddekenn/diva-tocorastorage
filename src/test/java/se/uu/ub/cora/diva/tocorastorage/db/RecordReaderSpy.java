@@ -36,7 +36,7 @@ public class RecordReaderSpy implements RecordReader {
 	public int numOfPredecessorsToReturn = 0;
 	public int numOfSuccessorsToReturn = 0;
 
-	public Map<String, String> onwRowRead;
+	public Map<String, String> oneRowRead;
 	public List<Map<String, String>> predecessorsToReturn = new ArrayList<>();
 	public List<Map<String, String>> successorsToReturn = new ArrayList<>();
 
@@ -62,7 +62,10 @@ public class RecordReaderSpy implements RecordReader {
 		usedConditionsList.add(usedConditions);
 		Map<String, String> map = new HashMap<>();
 		map.put("someKey", "someValue");
-		onwRowRead = map;
+		if (conditions.containsKey("id") && conditions.get("id").equals("someIdWithClosedDate")) {
+			map.put("closed_date", "2018-12-31");
+		}
+		oneRowRead = map;
 		returnedList.add(map);
 		return map;
 	}

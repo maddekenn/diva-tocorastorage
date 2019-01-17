@@ -34,7 +34,7 @@ public class DivaDbToCoraOrganisationPredecessorConverter
 		if (mandatoryValuesAreMissing()) {
 			throw ConversionException.withMessageAndException(
 					"Error converting organisation predecessor to Cora organisation predecessor: Map does not "
-							+ "contain mandatory values for organisation id and prdecessor id",
+							+ "contain mandatory values for organisation id and predecessor id",
 					null);
 		}
 		return createDataGroup();

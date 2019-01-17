@@ -46,7 +46,7 @@ public class DivaDbToCoraOrganisationSuccessorConverter
 	}
 
 	private void addSuccessorLink(DataGroup closed) {
-		DataGroup successor = createOrganisationLinkUsingLinkedRecordId(dbRow.get("id"));
+		DataGroup successor = createOrganisationLinkUsingLinkedRecordId(dbRow.get(ORGANISATION_ID));
 		closed.addChild(successor);
 	}
 

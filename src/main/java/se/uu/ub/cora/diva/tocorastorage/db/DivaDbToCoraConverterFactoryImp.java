@@ -27,6 +27,12 @@ public class DivaDbToCoraConverterFactoryImp implements DivaDbToCoraConverterFac
 		if ("divaOrganisation".equals(type)) {
 			return new DivaDbToCoraOrganisationConverter();
 		}
+		if ("divaOrganisationPredecessor".equals(type)) {
+			return new DivaDbToCoraOrganisationPredecessorConverter();
+		}
+		if ("divaOrganisationSuccessor".equals(type)) {
+			return new DivaDbToCoraOrganisationSuccessorConverter();
+		}
 		throw NotImplementedException.withMessage("No converter implemented for: " + type);
 	}
 

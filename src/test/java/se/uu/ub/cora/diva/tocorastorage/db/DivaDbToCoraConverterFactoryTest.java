@@ -45,4 +45,18 @@ public class DivaDbToCoraConverterFactoryTest {
 				.factor("divaOrganisation");
 		assertTrue(converter instanceof DivaDbToCoraOrganisationConverter);
 	}
+
+	@Test
+	public void testFactoryOrganisationPredecessor() throws Exception {
+		DivaDbToCoraConverter converter = divaDbToCoraConverterFactoryImp
+				.factor("divaOrganisationPredecessor");
+		assertTrue(converter instanceof DivaDbToCoraOrganisationPredecessorConverter);
+	}
+
+	@Test
+	public void testFactoryOrganisationSuccessor() throws Exception {
+		DivaDbToCoraConverter converter = divaDbToCoraConverterFactoryImp
+				.factor("divaOrganisationSuccessor");
+		assertTrue(converter instanceof DivaDbToCoraOrganisationSuccessorConverter);
+	}
 }

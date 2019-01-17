@@ -37,14 +37,14 @@ public class DivaDbToCoraOrganisationPredecessorConverterTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "someOrgId");
-		rowFromDb.put("predecessorid", "somePredecessorId");
+		rowFromDb.put("organisation_id", "someOrgId");
+		rowFromDb.put("predecessor_id", "somePredecessorId");
 		converter = new DivaDbToCoraOrganisationPredecessorConverter();
 
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and prdecessor id")
+			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and predecessor id")
 	public void testEmptyMap() {
 		rowFromDb = new HashMap<>();
 		DataGroup organisation = converter.fromMap(rowFromDb);
@@ -52,26 +52,26 @@ public class DivaDbToCoraOrganisationPredecessorConverterTest {
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and prdecessor id")
+			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and predecessor id")
 	public void testMapWithEmptyValueForOrganisationIdThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "");
+		rowFromDb.put("organisation_id", "");
 		converter.fromMap(rowFromDb);
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and prdecessor id")
+			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and predecessor id")
 	public void testMapWithMissingPredecessorIdThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "someOrgId");
+		rowFromDb.put("organisation_id", "someOrgId");
 		converter.fromMap(rowFromDb);
 	}
 
 	@Test(expectedExceptions = ConversionException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and prdecessor id")
+			+ "Error converting organisation predecessor to Cora organisation predecessor: Map does not contain mandatory values for organisation id and predecessor id")
 	public void testMapWithEmptyValueForPredecessorIdThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "someOrgId");
+		rowFromDb.put("organisation_id", "someOrgId");
 		rowFromDb.put("predecessorid", "");
 		converter.fromMap(rowFromDb);
 	}

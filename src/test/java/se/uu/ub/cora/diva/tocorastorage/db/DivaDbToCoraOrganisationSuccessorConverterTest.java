@@ -37,8 +37,8 @@ public class DivaDbToCoraOrganisationSuccessorConverterTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "someOrgId");
-		rowFromDb.put("predecessorid", "somePredecessorId");
+		rowFromDb.put("organisation_id", "someOrgId");
+		rowFromDb.put("predecessor_id", "somePredecessorId");
 		converter = new DivaDbToCoraOrganisationSuccessorConverter();
 
 	}
@@ -55,7 +55,7 @@ public class DivaDbToCoraOrganisationSuccessorConverterTest {
 			+ "Error converting organisation successor to Cora organisation successor: Map does not contain mandatory values for organisation id and prdecessor id")
 	public void testMapWithEmptyValueForOrganisationIdThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "");
+		rowFromDb.put("organisation_id", "");
 		converter.fromMap(rowFromDb);
 	}
 
@@ -63,7 +63,7 @@ public class DivaDbToCoraOrganisationSuccessorConverterTest {
 			+ "Error converting organisation successor to Cora organisation successor: Map does not contain mandatory values for organisation id and prdecessor id")
 	public void testMapWithMissingPredecessorIdThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "someOrgId");
+		rowFromDb.put("organisation_id", "someOrgId");
 		converter.fromMap(rowFromDb);
 	}
 
@@ -71,7 +71,7 @@ public class DivaDbToCoraOrganisationSuccessorConverterTest {
 			+ "Error converting organisation successor to Cora organisation successor: Map does not contain mandatory values for organisation id and prdecessor id")
 	public void testMapWithEmptyValueForPredecessorIdThrowsError() {
 		rowFromDb = new HashMap<>();
-		rowFromDb.put("id", "someOrgId");
+		rowFromDb.put("organisation_id", "someOrgId");
 		rowFromDb.put("predecessorid", "");
 		converter.fromMap(rowFromDb);
 	}
