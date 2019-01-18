@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,7 +23,6 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -38,13 +37,16 @@ public class DivaDbToCoraRecordStorageTest {
 	private DivaDbToCoraRecordStorage divaToCoraRecordStorage;
 	private DivaDbToCoraConverterFactorySpy converterFactory;
 	private RecordReaderFactorySpy recordReaderFactory;
+	private DivaDbToCoraFactorySpy divaDbToCoraFactory;
 
 	@BeforeMethod
 	public void BeforeMethod() {
 		converterFactory = new DivaDbToCoraConverterFactorySpy();
 		recordReaderFactory = new RecordReaderFactorySpy();
+		divaDbToCoraFactory = new DivaDbToCoraFactorySpy();
 		divaToCoraRecordStorage = DivaDbToCoraRecordStorage
-				.usingRecordReaderFactoryAndConverterFactory(recordReaderFactory, converterFactory);
+				.usingRecordReaderFactoryConverterFactoryAndDbToCoraFactory(recordReaderFactory,
+						converterFactory, divaDbToCoraFactory);
 	}
 
 	@Test
@@ -64,52 +66,25 @@ public class DivaDbToCoraRecordStorageTest {
 	}
 
 	@Test
-	public void testReadOrgansiationFactorDbReader() throws Exception {
+	public void testCallToDivaDbToCoraFactory() throws Exception {
 		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
-		assertTrue(recordReaderFactory.factorWasCalled);
+		assertTrue(divaDbToCoraFactory.factorWasCalled);
+		assertEquals(divaDbToCoraFactory.type, "divaOrganisation");
 	}
 
 	@Test
-	public void testReadOrgansiationCountryTableRequestedFromReader() throws Exception {
+	public void testReadOrganisationMakeCorrectCalls() throws Exception {
 		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
-		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		assertEquals(recordReader.usedTableName, TABLE_NAME);
+		DivaDbToCoraSpy factored = divaDbToCoraFactory.factored;
+		assertEquals(factored.type, TABLE_NAME);
+		assertEquals(factored.id, "someId");
 	}
 
 	@Test
-	public void testReadOrganisationConditionsForOrganisationTable() throws Exception {
-		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
-		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		Map<String, String> conditions = recordReader.usedConditions;
-		assertEquals(conditions.get("id"), "someId");
-	}
-
-	@Test
-	public void testReadOrganisationConverterIsFactored() throws Exception {
-		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
-		DivaDbToCoraConverter divaDbToCoraConverter = converterFactory.factoredConverters.get(0);
-		assertNotNull(divaDbToCoraConverter);
-	}
-
-	@Test
-	public void testReadOrganisationConverterIsCalledWithDataFromDbStorage() throws Exception {
-		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
-		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
-				.get(0);
-		assertNotNull(divaDbToCoraConverter.mapToConvert);
-		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
-	}
-
-	@Test
-	public void testReadOrganisationCallsDatabaseAndReturnsConvertedResult() throws Exception {
-		DataGroup readCountry = divaToCoraRecordStorage.read(TABLE_NAME, "someId");
-		RecordReaderSpy recordReader = recordReaderFactory.factored;
-		DivaDbToCoraConverterSpy divaDbToCoraConverter = (DivaDbToCoraConverterSpy) converterFactory.factoredConverters
-				.get(0);
-		assertEquals(recordReader.returnedList.size(), 1);
-		assertEquals(recordReader.returnedList.get(0), divaDbToCoraConverter.mapToConvert);
-		assertEquals(readCountry, divaDbToCoraConverter.convertedDbDataGroup);
+	public void testOrganisationFromDivaDbToCoraIsReturnedFromRead() throws Exception {
+		DataGroup readOrganisation = divaToCoraRecordStorage.read(TABLE_NAME, "someId");
+		DivaDbToCoraSpy factored = divaDbToCoraFactory.factored;
+		assertEquals(readOrganisation, factored.dataGroup);
 	}
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""

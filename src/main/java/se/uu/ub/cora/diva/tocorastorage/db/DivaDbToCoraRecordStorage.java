@@ -1,8 +1,25 @@
+/*
+ * Copyright 2018, 2019 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.diva.tocorastorage.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,42 +34,30 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 
 	private RecordReaderFactory recordReaderFactory;
 	private DivaDbToCoraConverterFactory converterFactory;
+	private DivaDbToCoraFactory divaDbToCoraFactory;
 
 	private DivaDbToCoraRecordStorage(RecordReaderFactory recordReaderFactory,
-			DivaDbToCoraConverterFactory converterFactory) {
+			DivaDbToCoraConverterFactory converterFactory,
+			DivaDbToCoraFactory divaDbToCoraFactory) {
 		this.recordReaderFactory = recordReaderFactory;
 		this.converterFactory = converterFactory;
+		this.divaDbToCoraFactory = divaDbToCoraFactory;
 	}
 
-	public static DivaDbToCoraRecordStorage usingRecordReaderFactoryAndConverterFactory(
-			RecordReaderFactory recordReaderFactory,
-			DivaDbToCoraConverterFactory converterFactory) {
-		return new DivaDbToCoraRecordStorage(recordReaderFactory, converterFactory);
+	public static DivaDbToCoraRecordStorage usingRecordReaderFactoryConverterFactoryAndDbToCoraFactory(
+			RecordReaderFactory recordReaderFactory, DivaDbToCoraConverterFactory converterFactory,
+			DivaDbToCoraFactory divaDbToCoraFactory) {
+		return new DivaDbToCoraRecordStorage(recordReaderFactory, converterFactory,
+				divaDbToCoraFactory);
 	}
 
 	@Override
 	public DataGroup read(String type, String id) {
 		if ("divaOrganisation".equals(type)) {
-			return readAndConvertOrganisationFromDb(type, id);
+			DivaDbToCora divaDbToCora = divaDbToCoraFactory.factor(type);
+			return divaDbToCora.convertOneRowData(type, id);
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);
-	}
-
-	private DataGroup readAndConvertOrganisationFromDb(String type, String id) {
-		Map<String, String> readRow = readOneRowFromDbUsingTypeAndId(type, id);
-		return convertOneMapFromDbToDataGroup(type, readRow);
-	}
-
-	private Map<String, String> readOneRowFromDbUsingTypeAndId(String type, String id) {
-		RecordReader recordReader = recordReaderFactory.factor();
-		Map<String, String> conditions = new HashMap<>();
-		conditions.put("id", id);
-		return recordReader.readOneRowFromDbUsingTableAndConditions(type, conditions);
-	}
-
-	private DataGroup convertOneMapFromDbToDataGroup(String type, Map<String, String> readRow) {
-		DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
-		return dbToCoraConverter.fromMap(readRow);
 	}
 
 	@Override
@@ -107,6 +112,11 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 			convertedList.add(convertedGroup);
 		}
 		return convertedList;
+	}
+
+	private DataGroup convertOneMapFromDbToDataGroup(String type, Map<String, String> readRow) {
+		DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
+		return dbToCoraConverter.fromMap(readRow);
 	}
 
 	@Override
