@@ -31,7 +31,7 @@ public class DivaDbToCoraOrganisation implements DivaDbToCora {
 
 	@Override
 	public DataGroup convertOneRowData(String type, String id) {
-		recordReader = recordReaderFactory.factor();
+		recordReader = getRecordReaderFactory().factor();
 		DataGroup organisation = readAndConvertOrganisationFromDb(type, id);
 		tryToReadAndConvertPredecessors(id, organisation);
 		tryToReadAndConvertSuccessors(id, organisation);
@@ -57,7 +57,7 @@ public class DivaDbToCoraOrganisation implements DivaDbToCora {
 	}
 
 	private DataGroup convertOneMapFromDbToDataGroup(String type, Map<String, String> readRow) {
-		DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
+		DivaDbToCoraConverter dbToCoraConverter = getConverterFactory().factor(type);
 		return dbToCoraConverter.fromMap(readRow);
 	}
 
@@ -92,7 +92,7 @@ public class DivaDbToCoraOrganisation implements DivaDbToCora {
 
 	private void convertAndAddPredecessor(DataGroup organisation, int repeatId,
 			Map<String, String> predecessorValues) {
-		DivaDbToCoraConverter predecessorConverter = converterFactory
+		DivaDbToCoraConverter predecessorConverter = getConverterFactory()
 				.factor(DIVA_ORGANISATION_PREDECESSOR);
 		DataGroup predecessor = predecessorConverter.fromMap(predecessorValues);
 		predecessor.setRepeatId(String.valueOf(repeatId));
@@ -134,10 +134,20 @@ public class DivaDbToCoraOrganisation implements DivaDbToCora {
 
 	private void convertAndAddSuccessor(DataGroup organisation, int repeatId,
 			Map<String, String> successorsValues) {
-		DivaDbToCoraConverter successorsConverter = converterFactory
+		DivaDbToCoraConverter successorsConverter = getConverterFactory()
 				.factor("divaOrganisationSuccessor");
 		DataGroup convertedSuccessor = successorsConverter.fromMap(successorsValues);
 		convertedSuccessor.setRepeatId(String.valueOf(repeatId));
 		organisation.addChild(convertedSuccessor);
+	}
+
+	public RecordReaderFactory getRecordReaderFactory() {
+		// for testing
+		return recordReaderFactory;
+	}
+
+	public DivaDbToCoraConverterFactory getConverterFactory() {
+		// for testing
+		return converterFactory;
 	}
 }

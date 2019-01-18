@@ -44,7 +44,7 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 		this.divaDbToCoraFactory = divaDbToCoraFactory;
 	}
 
-	public static DivaDbToCoraRecordStorage usingRecordReaderFactoryAndConverterFactory(
+	public static DivaDbToCoraRecordStorage usingRecordReaderFactoryConverterFactoryAndDbToCoraFactory(
 			RecordReaderFactory recordReaderFactory, DivaDbToCoraConverterFactory converterFactory,
 			DivaDbToCoraFactory divaDbToCoraFactory) {
 		return new DivaDbToCoraRecordStorage(recordReaderFactory, converterFactory,
@@ -54,7 +54,7 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 	@Override
 	public DataGroup read(String type, String id) {
 		if ("divaOrganisation".equals(type)) {
-			DivaDbToCora divaDbToCora = divaDbToCoraFactory.factor();
+			DivaDbToCora divaDbToCora = divaDbToCoraFactory.factor(type);
 			return divaDbToCora.convertOneRowData(type, id);
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);

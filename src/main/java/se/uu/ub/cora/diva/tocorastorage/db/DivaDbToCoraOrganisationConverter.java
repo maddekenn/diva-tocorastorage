@@ -1,5 +1,7 @@
 package se.uu.ub.cora.diva.tocorastorage.db;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
@@ -23,7 +25,6 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 					null);
 		}
 		return createDataGroup();
-
 	}
 
 	private boolean organisationIsEmpty() {
@@ -40,7 +41,6 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		possiblyCreateAndAddOrganisationNumber();
 		possiblyCreateAndAddOrganisationCode();
 		possiblyCreateAndAddURL();
-
 		possiblyAddParentOrganisation();
 
 		return organisation;
@@ -58,10 +58,7 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", id));
 		createAndAddType(recordInfo);
 		createAndAddDataDivider(recordInfo);
-		DataGroup createdBy = createLinkUsingNameInDataRecordTypeAndRecordId("createdBy",
-				"coraUser", "coraUser:4412982402853626");
-		recordInfo.addChild(createdBy);
-
+		createAndAddCreatedAndUpdatedInfo(recordInfo);
 		return recordInfo;
 	}
 
@@ -71,18 +68,53 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		recordInfo.addChild(type);
 	}
 
-	private void createAndAddDataDivider(DataGroup recordInfo) {
-		DataGroup dataDivider = createLinkUsingNameInDataRecordTypeAndRecordId("dataDivider",
-				"system", "diva");
-		recordInfo.addChild(dataDivider);
-	}
-
 	private DataGroup createLinkUsingNameInDataRecordTypeAndRecordId(String nameInData,
 			String linkedRecordType, String linkedRecordId) {
 		DataGroup linkGroup = DataGroup.withNameInData(nameInData);
 		linkGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
 		linkGroup.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
 		return linkGroup;
+	}
+
+	private void createAndAddDataDivider(DataGroup recordInfo) {
+		DataGroup dataDivider = createLinkUsingNameInDataRecordTypeAndRecordId("dataDivider",
+				"system", "diva");
+		recordInfo.addChild(dataDivider);
+	}
+
+	private void createAndAddCreatedAndUpdatedInfo(DataGroup recordInfo) {
+		createAndAddCreatedInfo(recordInfo);
+
+		createAndAddUpdatedInfo(recordInfo);
+	}
+
+	private void createAndAddCreatedInfo(DataGroup recordInfo) {
+		DataGroup createdBy = createLinkUsingNameInDataRecordTypeAndRecordId("createdBy",
+				"coraUser", "coraUser:4412982402853626");
+		recordInfo.addChild(createdBy);
+		addPredefinedTimestampToDataGroupUsingNameInData(recordInfo, "tsCreated");
+	}
+
+	private void createAndAddUpdatedInfo(DataGroup recordInfo) {
+		DataGroup updated = DataGroup.withNameInData("updated");
+		DataGroup updatedBy = createLinkUsingNameInDataRecordTypeAndRecordId("updatedBy",
+				"coraUser", "coraUser:4412982402853626");
+		updatedBy.setRepeatId("0");
+		updated.addChild(updatedBy);
+		addPredefinedTimestampToDataGroupUsingNameInData(updated, "tsUpdated");
+		recordInfo.addChild(updated);
+	}
+
+	private void addPredefinedTimestampToDataGroupUsingNameInData(DataGroup recordInfo,
+			String nameInData) {
+		LocalDateTime tsCreated = LocalDateTime.of(2015, 01, 01, 00, 00, 00);
+		String dateTimeString = getLocalTimeDateAsString(tsCreated);
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue(nameInData, dateTimeString));
+	}
+
+	private String getLocalTimeDateAsString(LocalDateTime localDateTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		return localDateTime.format(formatter);
 	}
 
 	private void createAndAddName() {
@@ -119,7 +151,7 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 		possiblyAddAtomicValueUsingKeyAndNameInData("street", "street");
 		possiblyAddAtomicValueUsingKeyAndNameInData("box", "box");
 		possiblyAddAtomicValueUsingKeyAndNameInData("postnumber", "postcode");
-		possiblyAddAtomicValueUsingKeyAndNameInData("country_code", "country");
+		possiblyAddCountryConvertedToUpperCase();
 	}
 
 	private void possiblyAddAtomicValueUsingKeyAndNameInData(String key, String nameInData) {
@@ -135,6 +167,13 @@ public class DivaDbToCoraOrganisationConverter implements DivaDbToCoraConverter 
 
 	private boolean valueForKeyHoldsNonEmptyData(String key) {
 		return dbRow.get(key) != null && !"".equals(dbRow.get(key));
+	}
+
+	private void possiblyAddCountryConvertedToUpperCase() {
+		if (valueExistsForKey("country_code")) {
+			String uppercaseValue = dbRow.get("country_code").toUpperCase();
+			organisation.addChild(DataAtomic.withNameInDataAndValue("country", uppercaseValue));
+		}
 	}
 
 	private void possiblyCreateAndAddOrganisationNumber() {

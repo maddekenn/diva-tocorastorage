@@ -2,6 +2,6 @@ package se.uu.ub.cora.diva.tocorastorage.db;
 
 public interface DivaDbToCoraFactory {
 
-	DivaDbToCora factor();
+	DivaDbToCora factor(String type);
 
 }

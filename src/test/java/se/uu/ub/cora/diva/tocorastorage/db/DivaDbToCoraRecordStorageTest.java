@@ -45,8 +45,8 @@ public class DivaDbToCoraRecordStorageTest {
 		recordReaderFactory = new RecordReaderFactorySpy();
 		divaDbToCoraFactory = new DivaDbToCoraFactorySpy();
 		divaToCoraRecordStorage = DivaDbToCoraRecordStorage
-				.usingRecordReaderFactoryAndConverterFactory(recordReaderFactory, converterFactory,
-						divaDbToCoraFactory);
+				.usingRecordReaderFactoryConverterFactoryAndDbToCoraFactory(recordReaderFactory,
+						converterFactory, divaDbToCoraFactory);
 	}
 
 	@Test
@@ -69,6 +69,7 @@ public class DivaDbToCoraRecordStorageTest {
 	public void testCallToDivaDbToCoraFactory() throws Exception {
 		divaToCoraRecordStorage.read(TABLE_NAME, "someId");
 		assertTrue(divaDbToCoraFactory.factorWasCalled);
+		assertEquals(divaDbToCoraFactory.type, "divaOrganisation");
 	}
 
 	@Test

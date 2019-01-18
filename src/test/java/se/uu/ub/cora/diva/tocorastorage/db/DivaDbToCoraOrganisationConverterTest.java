@@ -137,10 +137,27 @@ public class DivaDbToCoraOrganisationConverterTest {
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordType"), "system");
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordId"), "diva");
 
+		assertCorrectCreatedAndUpdatedInfo(recordInfo);
+	}
+
+	private void assertCorrectCreatedAndUpdatedInfo(DataGroup recordInfo) {
+		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("tsCreated"),
+				"2015-01-01 00:00:00");
+
 		DataGroup createdBy = recordInfo.getFirstGroupWithNameInData("createdBy");
 		assertEquals(createdBy.getFirstAtomicValueWithNameInData("linkedRecordType"), "coraUser");
 		assertEquals(createdBy.getFirstAtomicValueWithNameInData("linkedRecordId"),
 				"coraUser:4412982402853626");
+
+		assertEquals(recordInfo.getAllGroupsWithNameInData("updated").size(), 1);
+		DataGroup updated = recordInfo.getFirstGroupWithNameInData("updated");
+		assertEquals(updated.getFirstAtomicValueWithNameInData("tsUpdated"), "2015-01-01 00:00:00");
+
+		DataGroup updatedBy = updated.getFirstGroupWithNameInData("updatedBy");
+		assertEquals(updatedBy.getFirstAtomicValueWithNameInData("linkedRecordType"), "coraUser");
+		assertEquals(updatedBy.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"coraUser:4412982402853626");
+		assertEquals(updatedBy.getRepeatId(), "0");
 
 	}
 
@@ -160,14 +177,14 @@ public class DivaDbToCoraOrganisationConverterTest {
 		rowFromDb.put("street", "Övre slottsgatan 1");
 		rowFromDb.put("box", "Box5435");
 		rowFromDb.put("postnumber", "345 34");
-		rowFromDb.put("country_code", "sv");
+		rowFromDb.put("country_code", "se");
 		DataGroup organisation = converter.fromMap(rowFromDb);
 		assertEquals(organisation.getFirstAtomicValueWithNameInData("city"), "uppsala");
 		assertEquals(organisation.getFirstAtomicValueWithNameInData("street"),
 				"Övre slottsgatan 1");
 		assertEquals(organisation.getFirstAtomicValueWithNameInData("box"), "Box5435");
 		assertEquals(organisation.getFirstAtomicValueWithNameInData("postcode"), "345 34");
-		assertEquals(organisation.getFirstAtomicValueWithNameInData("country"), "sv");
+		assertEquals(organisation.getFirstAtomicValueWithNameInData("country"), "SE");
 	}
 
 	@Test
