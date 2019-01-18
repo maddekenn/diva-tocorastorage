@@ -20,7 +20,6 @@ package se.uu.ub.cora.diva.tocorastorage.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,139 +32,32 @@ import se.uu.ub.cora.sqldatabase.RecordReaderFactory;
 
 public class DivaDbToCoraRecordStorage implements RecordStorage {
 
-	private static final String DIVA_ORGANISATION_PREDECESSOR = "divaOrganisationPredecessor";
-	private static final String CLOSED_DATE = "closed_date";
 	private RecordReaderFactory recordReaderFactory;
 	private DivaDbToCoraConverterFactory converterFactory;
-	private RecordReader recordReader;
-	private String organisationClosedDate = null;
+	private DivaDbToCoraFactory divaDbToCoraFactory;
 
 	private DivaDbToCoraRecordStorage(RecordReaderFactory recordReaderFactory,
-			DivaDbToCoraConverterFactory converterFactory) {
+			DivaDbToCoraConverterFactory converterFactory,
+			DivaDbToCoraFactory divaDbToCoraFactory) {
 		this.recordReaderFactory = recordReaderFactory;
 		this.converterFactory = converterFactory;
+		this.divaDbToCoraFactory = divaDbToCoraFactory;
 	}
 
 	public static DivaDbToCoraRecordStorage usingRecordReaderFactoryAndConverterFactory(
-			RecordReaderFactory recordReaderFactory,
-			DivaDbToCoraConverterFactory converterFactory) {
-		return new DivaDbToCoraRecordStorage(recordReaderFactory, converterFactory);
+			RecordReaderFactory recordReaderFactory, DivaDbToCoraConverterFactory converterFactory,
+			DivaDbToCoraFactory divaDbToCoraFactory) {
+		return new DivaDbToCoraRecordStorage(recordReaderFactory, converterFactory,
+				divaDbToCoraFactory);
 	}
 
 	@Override
 	public DataGroup read(String type, String id) {
 		if ("divaOrganisation".equals(type)) {
-			recordReader = recordReaderFactory.factor();
-			DataGroup organisation = readAndConvertOrganisationFromDb(type, id);
-			tryToReadAndConvertPredecessors(id, organisation);
-			tryToReadAndConvertSuccessors(id, organisation);
-			return organisation;
-
+			DivaDbToCora divaDbToCora = divaDbToCoraFactory.factor();
+			return divaDbToCora.convertOneRowData(type, id);
 		}
 		throw NotImplementedException.withMessage("read is not implemented for type: " + type);
-	}
-
-	private void tryToReadAndConvertPredecessors(String id, DataGroup organisation) {
-		Map<String, String> conditions = new HashMap<>();
-		conditions.put("organisation_id", id);
-		List<Map<String, String>> predecessors = recordReader
-				.readFromTableUsingConditions(DIVA_ORGANISATION_PREDECESSOR, conditions);
-
-		possiblyConvertPredecessors(organisation, predecessors);
-	}
-
-	private DataGroup readAndConvertOrganisationFromDb(String type, String id) {
-		Map<String, String> readRow = readOneRowFromDbUsingTypeAndId(type, id);
-		saveClosedDateIfItExists(readRow);
-		return convertOneMapFromDbToDataGroup(type, readRow);
-	}
-
-	private Map<String, String> readOneRowFromDbUsingTypeAndId(String type, String id) {
-		Map<String, String> conditions = new HashMap<>();
-		conditions.put("id", id);
-		return recordReader.readOneRowFromDbUsingTableAndConditions(type, conditions);
-	}
-
-	private void saveClosedDateIfItExists(Map<String, String> readRow) {
-		if (readRow.containsKey(CLOSED_DATE) && !"".equals(readRow.get("closedDate"))) {
-			organisationClosedDate = readRow.get(CLOSED_DATE);
-		}
-	}
-
-	private DataGroup convertOneMapFromDbToDataGroup(String type, Map<String, String> readRow) {
-		DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
-		return dbToCoraConverter.fromMap(readRow);
-	}
-
-	private void possiblyConvertPredecessors(DataGroup organisation,
-			List<Map<String, String>> predecessors) {
-		if (collectionContainsData(predecessors)) {
-			convertAndAddPredecessors(organisation, predecessors);
-		}
-	}
-
-	private void convertAndAddPredecessors(DataGroup organisation,
-			List<Map<String, String>> predecessors) {
-		int repeatId = 0;
-		for (Map<String, String> predecessorValues : predecessors) {
-			convertAndAddPredecessor(organisation, repeatId, predecessorValues);
-			repeatId++;
-		}
-	}
-
-	private void convertAndAddPredecessor(DataGroup organisation, int repeatId,
-			Map<String, String> predecessorValues) {
-		DivaDbToCoraConverter predecessorConverter = converterFactory
-				.factor(DIVA_ORGANISATION_PREDECESSOR);
-		DataGroup predecessor = predecessorConverter.fromMap(predecessorValues);
-		predecessor.setRepeatId(String.valueOf(repeatId));
-		organisation.addChild(predecessor);
-	}
-
-	private void tryToReadAndConvertSuccessors(String id, DataGroup organisation) {
-		Map<String, String> conditions = new HashMap<>();
-		conditions.put("predecessor_id", id);
-		List<Map<String, String>> successors = recordReader
-				.readFromTableUsingConditions(DIVA_ORGANISATION_PREDECESSOR, conditions);
-
-		possiblyConvertSuccessors(organisation, successors);
-	}
-
-	private void possiblyConvertSuccessors(DataGroup organisation,
-			List<Map<String, String>> successors) {
-		if (collectionContainsData(successors)) {
-			convertAndAddSuccessors(organisation, successors);
-		}
-	}
-
-	private boolean collectionContainsData(List<Map<String, String>> successors) {
-		return successors != null && !successors.isEmpty();
-	}
-
-	private void convertAndAddSuccessors(DataGroup organisation,
-			List<Map<String, String>> successors) {
-		int repeatId = 0;
-		for (Map<String, String> successorsValues : successors) {
-			addClosedDateToSuccessorIfOrganisationHasClosedDate(successorsValues);
-			convertAndAddSuccessor(organisation, repeatId, successorsValues);
-			repeatId++;
-		}
-	}
-
-	private void addClosedDateToSuccessorIfOrganisationHasClosedDate(
-			Map<String, String> successorsValues) {
-		if (organisationClosedDate != null) {
-			successorsValues.put(CLOSED_DATE, organisationClosedDate);
-		}
-	}
-
-	private void convertAndAddSuccessor(DataGroup organisation, int repeatId,
-			Map<String, String> successorsValues) {
-		DivaDbToCoraConverter successorsConverter = converterFactory
-				.factor("divaOrganisationSuccessor");
-		DataGroup convertedSuccessor = successorsConverter.fromMap(successorsValues);
-		convertedSuccessor.setRepeatId(String.valueOf(repeatId));
-		organisation.addChild(convertedSuccessor);
 	}
 
 	@Override
@@ -201,7 +93,7 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 	}
 
 	private List<Map<String, String>> readAllFromDb(String type) {
-		recordReader = recordReaderFactory.factor();
+		RecordReader recordReader = recordReaderFactory.factor();
 		return recordReader.readAllFromTable(type);
 	}
 
@@ -220,6 +112,11 @@ public class DivaDbToCoraRecordStorage implements RecordStorage {
 			convertedList.add(convertedGroup);
 		}
 		return convertedList;
+	}
+
+	private DataGroup convertOneMapFromDbToDataGroup(String type, Map<String, String> readRow) {
+		DivaDbToCoraConverter dbToCoraConverter = converterFactory.factor(type);
+		return dbToCoraConverter.fromMap(readRow);
 	}
 
 	@Override

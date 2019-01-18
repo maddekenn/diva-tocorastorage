@@ -137,6 +137,11 @@ public class DivaDbToCoraOrganisationConverterTest {
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordType"), "system");
 		assertEquals(dataDivider.getFirstAtomicValueWithNameInData("linkedRecordId"), "diva");
 
+		DataGroup createdBy = recordInfo.getFirstGroupWithNameInData("createdBy");
+		assertEquals(createdBy.getFirstAtomicValueWithNameInData("linkedRecordType"), "coraUser");
+		assertEquals(createdBy.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"coraUser:4412982402853626");
+
 	}
 
 	@Test

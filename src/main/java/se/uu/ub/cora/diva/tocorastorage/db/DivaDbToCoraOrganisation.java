@@ -8,7 +8,7 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.sqldatabase.RecordReader;
 import se.uu.ub.cora.sqldatabase.RecordReaderFactory;
 
-public class DivaDbToCoraOrganisation {
+public class DivaDbToCoraOrganisation implements DivaDbToCora {
 
 	private static final String DIVA_ORGANISATION_PREDECESSOR = "divaOrganisationPredecessor";
 	private static final String CLOSED_DATE = "closed_date";
@@ -29,6 +29,7 @@ public class DivaDbToCoraOrganisation {
 		return new DivaDbToCoraOrganisation(recordReaderFactory, converterFactory);
 	}
 
+	@Override
 	public DataGroup convertOneRowData(String type, String id) {
 		recordReader = recordReaderFactory.factor();
 		DataGroup organisation = readAndConvertOrganisationFromDb(type, id);
