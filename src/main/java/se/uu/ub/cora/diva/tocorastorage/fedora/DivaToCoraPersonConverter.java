@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -60,7 +60,7 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 	}
 
 	private void createDefaultNameAndAddToPerson(DataGroup person) {
-		DataGroup defaultName = DataGroup.withNameInData("personName");
+		DataGroup defaultName = DataGroup.withNameInData("authorizedName");
 		createName(defaultName);
 		if (dataGroupHasChildren(defaultName)) {
 			person.addChild(defaultName);
@@ -73,9 +73,9 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
 	private void createName(DataGroup nameGroup) {
 		String lastName = getDefaultNamePartFromXML("lastname");
-		possiblyAddChildToGroupUsingNameInDataAndValue(nameGroup, "personLastName", lastName);
+		possiblyAddChildToGroupUsingNameInDataAndValue(nameGroup, "familyName", lastName);
 		String firstName = getDefaultNamePartFromXML("firstname");
-		possiblyAddChildToGroupUsingNameInDataAndValue(nameGroup, "personFirstName", firstName);
+		possiblyAddChildToGroupUsingNameInDataAndValue(nameGroup, "givenName", firstName);
 	}
 
 	private void possiblyAddChildToGroupUsingNameInDataAndValue(DataGroup nameGroup,
@@ -111,7 +111,7 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
 	private void addAlternativeNameToPersonUsingNodeAndPersonAndRepeatId(Node nameForm,
 			DataGroup person, String repeatId) {
-		DataGroup alternativeName = DataGroup.withNameInData("personAlternativeName");
+		DataGroup alternativeName = DataGroup.withNameInData("alternativeName");
 		addChildrenToAlternativeName(nameForm, alternativeName);
 
 		if (dataGroupHasChildren(alternativeName)) {
@@ -123,12 +123,11 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 
 	private void addChildrenToAlternativeName(Node nameForm, DataGroup alternativeName) {
 		String lastName = getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm, "lastname");
-		possiblyAddChildToGroupUsingNameInDataAndValue(alternativeName, "personLastName", lastName);
+		possiblyAddChildToGroupUsingNameInDataAndValue(alternativeName, "familyName", lastName);
 
 		String firstName = getAlternativeNamePartFromXMLUsingNodeAndXPathPart(nameForm,
 				"firstname");
-		possiblyAddChildToGroupUsingNameInDataAndValue(alternativeName, "personFirstName",
-				firstName);
+		possiblyAddChildToGroupUsingNameInDataAndValue(alternativeName, "givenName", firstName);
 	}
 
 	private String getAlternativeNamePartFromXMLUsingNodeAndXPathPart(Node nameForm,

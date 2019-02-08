@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -34,7 +34,6 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.diva.tocorastorage.ParseException;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverter;
 
 public class DivaToCoraPersonConverterTest {
 
@@ -69,11 +68,11 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
-		DataGroup name = personDataGroup.getFirstGroupWithNameInData("personName");
+		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
 		assertCorrectName(name, "Testsson", "Test", null);
 
 		List<DataGroup> allGroupsWithNameInData = personDataGroup
-				.getAllGroupsWithNameInData("personAlternativeName");
+				.getAllGroupsWithNameInData("alternativeName");
 
 		assertCorrectName(allGroupsWithNameInData.get(0), "Erixon", "Karl", "0");
 		assertCorrectName(allGroupsWithNameInData.get(1), "Testsson", "Test", "1");
@@ -84,9 +83,9 @@ public class DivaToCoraPersonConverterTest {
 
 	private void assertCorrectName(DataGroup dataGroup, String expectedLastName,
 			String expectedFirstName, String repeatId) {
-		String lastName = dataGroup.getFirstAtomicValueWithNameInData("personLastName");
+		String lastName = dataGroup.getFirstAtomicValueWithNameInData("familyName");
 		assertEquals(lastName, expectedLastName);
-		String firstName = dataGroup.getFirstAtomicValueWithNameInData("personFirstName");
+		String firstName = dataGroup.getFirstAtomicValueWithNameInData("givenName");
 		assertEquals(firstName, expectedFirstName);
 		if (repeatId != null) {
 			assertEquals(dataGroup.getRepeatId(), repeatId);
@@ -109,11 +108,11 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
-		DataGroup name = personDataGroup.getFirstGroupWithNameInData("personName");
+		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
 		assertCorrectName(name, "Svensson", "Sven", null);
 
 		List<DataGroup> allGroupsWithNameInData = personDataGroup
-				.getAllGroupsWithNameInData("personAlternativeName");
+				.getAllGroupsWithNameInData("alternativeName");
 
 		assertCorrectName(allGroupsWithNameInData.get(0), "Karlsson", "Sven", "0");
 		assertEquals(allGroupsWithNameInData.size(), 1);
@@ -136,9 +135,9 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
-		DataGroup name = personDataGroup.getFirstGroupWithNameInData("personName");
-		assertFalse(name.containsChildWithNameInData("personFirstName"));
-		assertEquals(name.getFirstAtomicValueWithNameInData("personLastName"), "Svensson");
+		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
+		assertFalse(name.containsChildWithNameInData("givenName"));
+		assertEquals(name.getFirstAtomicValueWithNameInData("familyName"), "Svensson");
 
 	}
 
@@ -158,9 +157,9 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
-		DataGroup name = personDataGroup.getFirstGroupWithNameInData("personName");
-		assertFalse(name.containsChildWithNameInData("personLastName"));
-		assertEquals(name.getFirstAtomicValueWithNameInData("personFirstName"), "Sven");
+		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
+		assertFalse(name.containsChildWithNameInData("familyName"));
+		assertEquals(name.getFirstAtomicValueWithNameInData("givenName"), "Sven");
 
 	}
 
@@ -179,7 +178,7 @@ public class DivaToCoraPersonConverterTest {
 
 		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
-		assertFalse(personDataGroup.containsChildWithNameInData("personName"));
+		assertFalse(personDataGroup.containsChildWithNameInData("authorizedName"));
 	}
 
 	@Test
@@ -199,12 +198,11 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
 		List<DataGroup> allGroupsWithNameInData = personDataGroup
-				.getAllGroupsWithNameInData("personAlternativeName");
+				.getAllGroupsWithNameInData("alternativeName");
 
 		DataGroup alternativeName = allGroupsWithNameInData.get(0);
-		assertFalse(alternativeName.containsChildWithNameInData("personFirstName"));
-		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("personLastName"),
-				"Karlsson");
+		assertFalse(alternativeName.containsChildWithNameInData("givenName"));
+		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("familyName"), "Karlsson");
 
 	}
 
@@ -225,11 +223,11 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
 		List<DataGroup> allGroupsWithNameInData = personDataGroup
-				.getAllGroupsWithNameInData("personAlternativeName");
+				.getAllGroupsWithNameInData("alternativeName");
 
 		DataGroup alternativeName = allGroupsWithNameInData.get(0);
-		assertFalse(alternativeName.containsChildWithNameInData("personLastName"));
-		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("personFirstName"), "Sven");
+		assertFalse(alternativeName.containsChildWithNameInData("familyName"));
+		assertEquals(alternativeName.getFirstAtomicValueWithNameInData("givenName"), "Sven");
 
 	}
 
@@ -249,7 +247,7 @@ public class DivaToCoraPersonConverterTest {
 		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
 
-		assertFalse(personDataGroup.containsChildWithNameInData("personAlternativeName"));
+		assertFalse(personDataGroup.containsChildWithNameInData("alternativeName"));
 
 	}
 
