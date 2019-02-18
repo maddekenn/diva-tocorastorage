@@ -40,12 +40,12 @@ public class DivaFedoraConverterFactoryTest {
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
 			+ "No converter implemented for: someType")
 	public void factorUnknownTypeThrowsException() throws Exception {
-		divaToCoraConverterFactoryImp.factor("someType");
+		divaToCoraConverterFactoryImp.factorToCoraConverter("someType");
 	}
 
 	@Test
 	public void testFactoryPerson() throws Exception {
-		DivaFedoraToCoraConverter converter = divaToCoraConverterFactoryImp.factor("person");
+		DivaFedoraToCoraConverter converter = divaToCoraConverterFactoryImp.factorToCoraConverter("person");
 		assertTrue(converter instanceof DivaFedoraToCoraPersonConverter);
 	}
 }

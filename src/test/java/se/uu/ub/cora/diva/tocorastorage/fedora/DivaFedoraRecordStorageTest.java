@@ -20,18 +20,22 @@ package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.diva.tocorastorage.FedoraException;
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
-import se.uu.ub.cora.diva.tocorastorage.ReadFedoraException;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraRecordStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public class DivaFedoraRecordStorageTest {
@@ -39,14 +43,17 @@ public class DivaFedoraRecordStorageTest {
 	private HttpHandlerFactorySpy httpHandlerFactory;
 	private DivaFedoraConverterFactorySpy converterFactory;
 	private String baseURL = "http://alvin-cora-fedora:8088/fedora/";
+	private String fedoraUsername = "fedoraUser";
+	private String fedoraPassword = "fedoraPassword";
 
 	@BeforeMethod
 	public void BeforeMethod() {
 		httpHandlerFactory = new HttpHandlerFactorySpy();
 		converterFactory = new DivaFedoraConverterFactorySpy();
 		divaToCoraRecordStorage = DivaFedoraRecordStorage
-				.usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(httpHandlerFactory,
-						converterFactory, baseURL);
+				.usingHttpHandlerFactoryAndConverterFactoryAndBaseURLAndUsernameAndPassword(
+						httpHandlerFactory, converterFactory, baseURL, fedoraUsername,
+						fedoraPassword);
 	}
 
 	@Test
@@ -103,18 +110,128 @@ public class DivaFedoraRecordStorageTest {
 	}
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
-			+ "update is not implemented")
+			+ "update is not implemented for type: null")
 	public void updateThrowsNotImplementedException() throws Exception {
 		divaToCoraRecordStorage.update(null, null, null, null, null, null);
 	}
 
+	@Test
+	public void updateUpdatesNameInRecordStorage() throws Exception {
+		httpHandlerFactory.responseText = "Dummy response text";
+		DataGroup record = DataGroup.withNameInData("authority");
+
+		DataGroup collectedTerms = createCollectTermsWithRecordLabel();
+
+		DataGroup linkList = null;
+		String dataDivider = null;
+
+		divaToCoraRecordStorage.update("person", "diva-person:2233", record, collectedTerms,
+				linkList, dataDivider);
+
+		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 1);
+		String encodedLabel = URLEncoder.encode("Some Person Collected Name åäö", "UTF-8");
+		assertEquals(httpHandlerFactory.urls.get(0),
+				baseURL + "objects/diva-person:2233/datastreams/METADATA?format=?xml&controlGroup=M"
+						+ "&logMessage=coraWritten&checksumType=SHA-512&dsLabel=" + encodedLabel);
+
+		HttpHandlerSpy httpHandler = (HttpHandlerSpy) httpHandlerFactory.factoredHttpHandlers
+				.get(0);
+		assertEquals(httpHandler.requestMetod, "PUT");
+		String encoded = Base64.getEncoder().encodeToString(
+				(fedoraUsername + ":" + fedoraPassword).getBytes(StandardCharsets.UTF_8));
+		assertEquals(httpHandler.requestProperties.get("Authorization"), "Basic " + encoded);
+
+		assertEquals(converterFactory.factoredToFedoraConverters.size(), 1);
+		assertEquals(converterFactory.factoredToFedoraTypes.get(0), "person");
+		DivaCoraToFedoraConverterSpy converterSpy = (DivaCoraToFedoraConverterSpy) converterFactory.factoredToFedoraConverters
+				.get(0);
+		assertSame(converterSpy.record, record);
+		assertEquals(converterSpy.returnedXML, httpHandler.outputStrings.get(0));
+	}
+
+	private DataGroup createCollectTermsWithRecordLabel() {
+		DataGroup collectedTerms = DataGroup.withNameInData("collectedData");
+		collectedTerms.addChild(DataAtomic.withNameInDataAndValue("type", "person"));
+		collectedTerms.addChild(DataAtomic.withNameInDataAndValue("id", "diva-person:2233"));
+
+		DataGroup storageTerms = DataGroup.withNameInData("storage");
+		collectedTerms.addChild(storageTerms);
+
+		DataGroup collectedRecordLabel = DataGroup.withNameInData("collectedDataTerm");
+		storageTerms.addChild(collectedRecordLabel);
+		collectedRecordLabel.setRepeatId("someRepeatId");
+		collectedRecordLabel.addChild(
+				DataAtomic.withNameInDataAndValue("collectTermId", "recordLabelStorageTerm"));
+		collectedRecordLabel.addChild(DataAtomic.withNameInDataAndValue("collectTermValue",
+				"Some Person Collected Name åäö"));
+		return collectedTerms;
+	}
+
+	@Test
+	public void updateIsMissingRecordLabelInCollectedStorageTerms() throws Exception {
+		httpHandlerFactory.responseText = "Dummy response text";
+		DataGroup record = DataGroup.withNameInData("authority");
+
+		DataGroup collectedTerms = DataGroup.withNameInData("collectedData");
+		collectedTerms.addChild(DataAtomic.withNameInDataAndValue("type", "person"));
+		collectedTerms.addChild(DataAtomic.withNameInDataAndValue("id", "diva-person:2244"));
+
+		DataGroup storageTerms = DataGroup.withNameInData("storage");
+		collectedTerms.addChild(storageTerms);
+
+		DataGroup collectedRecordLabel = DataGroup.withNameInData("collectedDataTerm");
+		storageTerms.addChild(collectedRecordLabel);
+		collectedRecordLabel.setRepeatId("someRepeatId");
+		collectedRecordLabel.addChild(
+				DataAtomic.withNameInDataAndValue("collectTermId", "NOTrecordLabelStorageTerm"));
+		collectedRecordLabel.addChild(
+				DataAtomic.withNameInDataAndValue("collectTermValue", "SomePlaceCollectedName"));
+
+		DataGroup linkList = null;
+		String dataDivider = null;
+
+		divaToCoraRecordStorage.update("person", "diva-person:2244", record, collectedTerms,
+				linkList, dataDivider);
+
+		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 1);
+		assertEquals(httpHandlerFactory.urls.get(0), baseURL
+				+ "objects/diva-person:2244/datastreams/METADATA?format=?xml&controlGroup=M"
+				+ "&logMessage=coraWritten&checksumType=SHA-512&dsLabel=LabelNotPresentInStorageTerms");
+	}
+
+	@Test(expectedExceptions = FedoraException.class, expectedExceptionsMessageRegExp = ""
+			+ "update to fedora failed for record: diva-person:77")
+	public void updateIfNotOkFromFedoraThrowException() throws Exception {
+		httpHandlerFactory.responseText = "Dummy response text";
+		httpHandlerFactory.responseCode = 505;
+
+		DataGroup record = DataGroup.withNameInData("authority");
+		DataGroup collectedTerms = createCollectTermsWithRecordLabel();
+
+		divaToCoraRecordStorage.update("person", "diva-person:77", record, collectedTerms, null,
+				null);
+	}
+
+	@Test(expectedExceptions = FedoraException.class, expectedExceptionsMessageRegExp = ""
+			+ "update to fedora failed for record: diva-person:23")
+	public void updateIfNotOkFromFedoraThrowExceptionOtherRecord() throws Exception {
+		httpHandlerFactory.responseText = "Dummy response text";
+		httpHandlerFactory.responseCode = 500;
+
+		DataGroup record = DataGroup.withNameInData("authority");
+		DataGroup collectedTerms = createCollectTermsWithRecordLabel();
+
+		divaToCoraRecordStorage.update("person", "diva-person:23", record, collectedTerms, null,
+				null);
+	}
+
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
 			+ "readList is not implemented for type: null")
-	public void readListThrowsNotImplementedException() throws Exception {
+	public void readListThrowsNotImplementedExceptionForTypeNull() throws Exception {
 		divaToCoraRecordStorage.readList(null, null);
 	}
 
-	@Test(expectedExceptions = ReadFedoraException.class, expectedExceptionsMessageRegExp = ""
+	@Test(expectedExceptions = FedoraException.class, expectedExceptionsMessageRegExp = ""
 			+ "Unable to read list of persons: Can not read xml: "
 			+ "The element type \"someTag\" must be terminated by the matching end-tag \"</someTag>\".")
 	public void readListThrowsParseExceptionOnBrokenXML() throws Exception {

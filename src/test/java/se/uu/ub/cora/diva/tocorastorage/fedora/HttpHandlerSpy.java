@@ -1,6 +1,10 @@
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import se.uu.ub.cora.httphandler.HttpHandler;
 
@@ -8,6 +12,9 @@ public class HttpHandlerSpy implements HttpHandler {
 
 	public String requestMetod;
 	public String responseText;
+	public int responseCode;
+	public Map<String, String> requestProperties = new HashMap<String, String>();
+	public List<String> outputStrings = new ArrayList<String>();
 
 	@Override
 	public void setRequestMethod(String requestMetod) {
@@ -21,20 +28,17 @@ public class HttpHandlerSpy implements HttpHandler {
 
 	@Override
 	public int getResponseCode() {
-		// TODO Auto-generated method stub
-		return 0;
+		return responseCode;
 	}
 
 	@Override
 	public void setOutput(String outputString) {
-		// TODO Auto-generated method stub
-
+		outputStrings.add(outputString);
 	}
 
 	@Override
 	public void setRequestProperty(String key, String value) {
-		// TODO Auto-generated method stub
-
+		requestProperties.put(key, value);
 	}
 
 	@Override

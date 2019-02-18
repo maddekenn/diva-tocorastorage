@@ -11,6 +11,7 @@ public class HttpHandlerFactorySpy implements HttpHandlerFactory {
 	public List<String> urls = new ArrayList<>();
 	public List<HttpHandler> factoredHttpHandlers = new ArrayList<>();
 	public String responseText = "";
+	public int responseCode = 200;
 
 	@Override
 	public HttpHandler factor(String url) {
@@ -18,6 +19,7 @@ public class HttpHandlerFactorySpy implements HttpHandlerFactory {
 		HttpHandlerSpy httpHandlerSpy = new HttpHandlerSpy();
 		factoredHttpHandlers.add(httpHandlerSpy);
 		httpHandlerSpy.responseText = responseText;
+		httpHandlerSpy.responseCode = responseCode;
 		return httpHandlerSpy;
 	}
 

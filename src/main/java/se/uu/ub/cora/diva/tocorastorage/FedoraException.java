@@ -18,23 +18,23 @@
  */
 package se.uu.ub.cora.diva.tocorastorage;
 
-public final class ReadFedoraException extends RuntimeException {
+public final class FedoraException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public static ReadFedoraException withMessage(String message) {
-		return new ReadFedoraException(message);
+	public static FedoraException withMessage(String message) {
+		return new FedoraException(message);
 	}
 
-	public static ReadFedoraException withMessageAndException(String message, Exception e) {
-		return new ReadFedoraException(message, e);
+	public static FedoraException withMessageAndException(String message, Exception e) {
+		return new FedoraException(message, e);
 	}
 
-	private ReadFedoraException(String message) {
+	private FedoraException(String message) {
 		super(message);
 	}
 
-	private ReadFedoraException(String message, Exception e) {
+	private FedoraException(String message, Exception e) {
 		super(message, e);
 	}
 
