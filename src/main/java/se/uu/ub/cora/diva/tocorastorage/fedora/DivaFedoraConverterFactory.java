@@ -18,10 +18,8 @@
  */
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+public interface DivaFedoraConverterFactory {
 
-public interface DivaToCoraConverter {
-
-	DataGroup fromXML(String xml);
+	DivaFedoraToCoraConverter factor(String type);
 
 }

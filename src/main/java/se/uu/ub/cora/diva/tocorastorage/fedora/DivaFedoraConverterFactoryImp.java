@@ -2,12 +2,12 @@ package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
 
-public class DivaToCoraConverterFactoryImp implements DivaToCoraConverterFactory {
+public class DivaFedoraConverterFactoryImp implements DivaFedoraConverterFactory {
 
 	@Override
-	public DivaToCoraConverter factor(String type) {
+	public DivaFedoraToCoraConverter factor(String type) {
 		if ("person".equals(type)) {
-			return new DivaToCoraPersonConverter();
+			return new DivaFedoraToCoraPersonConverter();
 		}
 		throw NotImplementedException.withMessage("No converter implemented for: " + type);
 	}

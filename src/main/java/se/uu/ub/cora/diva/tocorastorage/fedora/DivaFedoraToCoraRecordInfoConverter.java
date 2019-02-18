@@ -24,16 +24,16 @@ import org.w3c.dom.NodeList;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class DivaToCoraRecordInfoConverter {
+public class DivaFedoraToCoraRecordInfoConverter {
 	private XMLXPathParser parser;
 	private DataGroup recordInfo;
 
-	public DivaToCoraRecordInfoConverter(XMLXPathParser parser) {
+	public DivaFedoraToCoraRecordInfoConverter(XMLXPathParser parser) {
 		this.parser = parser;
 	}
 
 	public static DataGroup createRecordInfo(XMLXPathParser parser) {
-		DivaToCoraRecordInfoConverter alvinToCoraRecordInfoConverter = new DivaToCoraRecordInfoConverter(
+		DivaFedoraToCoraRecordInfoConverter alvinToCoraRecordInfoConverter = new DivaFedoraToCoraRecordInfoConverter(
 				parser);
 		return alvinToCoraRecordInfoConverter.createRecordInfoAsDataGroup();
 	}

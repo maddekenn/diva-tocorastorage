@@ -7,7 +7,7 @@ import java.util.Collection;
 import se.uu.ub.cora.bookkeeper.data.DataAttribute;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-public class DivaToCoraPersonConverterTestHelper {
+public class DivaFedoraToCoraPersonConverterTestHelper {
 	public static void assertCorrectIdUsingRecordInfoAndId(DataGroup recordInfo, String id) {
 		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("id"), id);
 	}

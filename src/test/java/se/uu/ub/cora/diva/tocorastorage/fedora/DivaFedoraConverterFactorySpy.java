@@ -21,18 +21,18 @@ package se.uu.ub.cora.diva.tocorastorage.fedora;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverter;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverterFactory;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraConverter;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraConverterFactory;
 
-public class DivaToCoraConverterFactorySpy implements DivaToCoraConverterFactory {
+public class DivaFedoraConverterFactorySpy implements DivaFedoraConverterFactory {
 
-	List<DivaToCoraConverter> factoredConverters = new ArrayList<>();
+	List<DivaFedoraToCoraConverter> factoredConverters = new ArrayList<>();
 	List<String> factoredTypes = new ArrayList<>();
 
 	@Override
-	public DivaToCoraConverter factor(String type) {
+	public DivaFedoraToCoraConverter factor(String type) {
 		factoredTypes.add(type);
-		DivaToCoraConverter converter = new DivaToCoraConverterSpy();
+		DivaFedoraToCoraConverter converter = new DivaFedoraToCoraConverterSpy();
 		factoredConverters.add(converter);
 		return converter;
 	}

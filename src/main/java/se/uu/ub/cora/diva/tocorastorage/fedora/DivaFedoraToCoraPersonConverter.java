@@ -25,7 +25,7 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.diva.tocorastorage.ParseException;
 
-public class DivaToCoraPersonConverter implements DivaToCoraConverter {
+public class DivaFedoraToCoraPersonConverter implements DivaFedoraToCoraConverter {
 
 	private XMLXPathParser parser;
 
@@ -51,7 +51,7 @@ public class DivaToCoraPersonConverter implements DivaToCoraConverter {
 	}
 
 	private void createRecordInfoAndAddToPerson(DataGroup place) {
-		DataGroup recordInfo = DivaToCoraRecordInfoConverter.createRecordInfo(parser);
+		DataGroup recordInfo = DivaFedoraToCoraRecordInfoConverter.createRecordInfo(parser);
 		place.addChild(recordInfo);
 	}
 

@@ -33,24 +33,24 @@ import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.spider.data.SpiderReadResult;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
-public final class DivaToCoraRecordStorage implements RecordStorage {
+public final class DivaFedoraRecordStorage implements RecordStorage {
 
 	private static final String PERSON = "person";
 	private HttpHandlerFactory httpHandlerFactory;
 	private String baseURL;
-	private DivaToCoraConverterFactory converterFactory;
+	private DivaFedoraConverterFactory converterFactory;
 
-	private DivaToCoraRecordStorage(HttpHandlerFactory httpHandlerFactory,
-			DivaToCoraConverterFactory converterFactory, String baseURL) {
+	private DivaFedoraRecordStorage(HttpHandlerFactory httpHandlerFactory,
+			DivaFedoraConverterFactory converterFactory, String baseURL) {
 		this.httpHandlerFactory = httpHandlerFactory;
 		this.converterFactory = converterFactory;
 		this.baseURL = baseURL;
 	}
 
-	public static DivaToCoraRecordStorage usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
-			HttpHandlerFactory httpHandlerFactory, DivaToCoraConverterFactory converterFactory,
+	public static DivaFedoraRecordStorage usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
+			HttpHandlerFactory httpHandlerFactory, DivaFedoraConverterFactory converterFactory,
 			String baseURL) {
-		return new DivaToCoraRecordStorage(httpHandlerFactory, converterFactory, baseURL);
+		return new DivaFedoraRecordStorage(httpHandlerFactory, converterFactory, baseURL);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public final class DivaToCoraRecordStorage implements RecordStorage {
 
 	private DataGroup readAndConvertPersonFromFedora(String id) {
 		HttpHandler httpHandler = createHttpHandlerForPerson(id);
-		DivaToCoraConverter toCoraConverter = converterFactory.factor(PERSON);
+		DivaFedoraToCoraConverter toCoraConverter = converterFactory.factor(PERSON);
 		return toCoraConverter.fromXML(httpHandler.getResponseText());
 	}
 

@@ -1,6 +1,6 @@
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
-public class DivaToCoraPersonConverterTestData {
+public class DivaFedoraToCoraPersonConverterTestData {
 	public static String person11685XML = "<authorityPerson>\n" + "  <type>PERSON</type>\n"
 			+ "  <pid>authority-person:11685</pid>\n" + "  <recordInfo>\n" + "    <events>\n"
 			+ "      <event>\n" + "        <type>CREATE</type>\n"

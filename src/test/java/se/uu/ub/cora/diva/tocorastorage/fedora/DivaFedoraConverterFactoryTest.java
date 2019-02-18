@@ -24,17 +24,17 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverter;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverterFactory;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraConverterFactoryImp;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraPersonConverter;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraConverter;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraConverterFactory;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraConverterFactoryImp;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverter;
 
-public class DivaToCoraConverterFactoryTest {
-	private DivaToCoraConverterFactory divaToCoraConverterFactoryImp;
+public class DivaFedoraConverterFactoryTest {
+	private DivaFedoraConverterFactory divaToCoraConverterFactoryImp;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		divaToCoraConverterFactoryImp = new DivaToCoraConverterFactoryImp();
+		divaToCoraConverterFactoryImp = new DivaFedoraConverterFactoryImp();
 	}
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
@@ -45,7 +45,7 @@ public class DivaToCoraConverterFactoryTest {
 
 	@Test
 	public void testFactoryPerson() throws Exception {
-		DivaToCoraConverter converter = divaToCoraConverterFactoryImp.factor("person");
-		assertTrue(converter instanceof DivaToCoraPersonConverter);
+		DivaFedoraToCoraConverter converter = divaToCoraConverterFactoryImp.factor("person");
+		assertTrue(converter instanceof DivaFedoraToCoraPersonConverter);
 	}
 }

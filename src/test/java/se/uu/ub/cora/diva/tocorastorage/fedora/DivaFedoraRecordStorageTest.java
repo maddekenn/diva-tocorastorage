@@ -31,20 +31,20 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
 import se.uu.ub.cora.diva.tocorastorage.ReadFedoraException;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaToCoraRecordStorage;
+import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraRecordStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
-public class DivaToCoraRecordStorageTest {
-	private DivaToCoraRecordStorage divaToCoraRecordStorage;
+public class DivaFedoraRecordStorageTest {
+	private DivaFedoraRecordStorage divaToCoraRecordStorage;
 	private HttpHandlerFactorySpy httpHandlerFactory;
-	private DivaToCoraConverterFactorySpy converterFactory;
+	private DivaFedoraConverterFactorySpy converterFactory;
 	private String baseURL = "http://alvin-cora-fedora:8088/fedora/";
 
 	@BeforeMethod
 	public void BeforeMethod() {
 		httpHandlerFactory = new HttpHandlerFactorySpy();
-		converterFactory = new DivaToCoraConverterFactorySpy();
-		divaToCoraRecordStorage = DivaToCoraRecordStorage
+		converterFactory = new DivaFedoraConverterFactorySpy();
+		divaToCoraRecordStorage = DivaFedoraRecordStorage
 				.usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(httpHandlerFactory,
 						converterFactory, baseURL);
 	}
@@ -78,7 +78,7 @@ public class DivaToCoraRecordStorageTest {
 
 		assertEquals(converterFactory.factoredConverters.size(), 1);
 		assertEquals(converterFactory.factoredTypes.get(0), "person");
-		DivaToCoraConverterSpy divaToCoraConverter = (DivaToCoraConverterSpy) converterFactory.factoredConverters
+		DivaFedoraToCoraConverterSpy divaToCoraConverter = (DivaFedoraToCoraConverterSpy) converterFactory.factoredConverters
 				.get(0);
 		assertEquals(divaToCoraConverter.xml, httpHandlerFactory.responseText);
 		assertEquals(readPerson, divaToCoraConverter.convertedDataGroup);
@@ -143,7 +143,7 @@ public class DivaToCoraRecordStorageTest {
 
 		assertEquals(converterFactory.factoredConverters.size(), 3);
 		assertEquals(converterFactory.factoredTypes.get(0), "person");
-		DivaToCoraConverterSpy divaToCoraConverter = (DivaToCoraConverterSpy) converterFactory.factoredConverters
+		DivaFedoraToCoraConverterSpy divaToCoraConverter = (DivaFedoraToCoraConverterSpy) converterFactory.factoredConverters
 				.get(0);
 		assertEquals(divaToCoraConverter.xml, httpHandlerFactory.responseText);
 		assertEquals(readPersonList.size(), 3);
