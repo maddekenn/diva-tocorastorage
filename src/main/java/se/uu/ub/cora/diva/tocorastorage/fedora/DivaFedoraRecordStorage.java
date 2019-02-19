@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,7 +18,10 @@
  */
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,8 +29,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.diva.tocorastorage.FedoraException;
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
-import se.uu.ub.cora.diva.tocorastorage.ReadFedoraException;
 import se.uu.ub.cora.httphandler.HttpHandler;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.spider.data.SpiderReadResult;
@@ -39,18 +42,24 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 	private HttpHandlerFactory httpHandlerFactory;
 	private String baseURL;
 	private DivaFedoraConverterFactory converterFactory;
+	private String username;
+	private String password;
 
 	private DivaFedoraRecordStorage(HttpHandlerFactory httpHandlerFactory,
-			DivaFedoraConverterFactory converterFactory, String baseURL) {
+			DivaFedoraConverterFactory converterFactory, String baseURL, String username,
+			String password) {
 		this.httpHandlerFactory = httpHandlerFactory;
 		this.converterFactory = converterFactory;
 		this.baseURL = baseURL;
+		this.username = username;
+		this.password = password;
 	}
 
-	public static DivaFedoraRecordStorage usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
+	public static DivaFedoraRecordStorage usingHttpHandlerFactoryAndConverterFactoryAndBaseURLAndUsernameAndPassword(
 			HttpHandlerFactory httpHandlerFactory, DivaFedoraConverterFactory converterFactory,
-			String baseURL) {
-		return new DivaFedoraRecordStorage(httpHandlerFactory, converterFactory, baseURL);
+			String baseURL, String username, String password) {
+		return new DivaFedoraRecordStorage(httpHandlerFactory, converterFactory, baseURL, username,
+				password);
 	}
 
 	@Override
@@ -63,7 +72,7 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 
 	private DataGroup readAndConvertPersonFromFedora(String id) {
 		HttpHandler httpHandler = createHttpHandlerForPerson(id);
-		DivaFedoraToCoraConverter toCoraConverter = converterFactory.factor(PERSON);
+		DivaFedoraToCoraConverter toCoraConverter = converterFactory.factorToCoraConverter(PERSON);
 		return toCoraConverter.fromXML(httpHandler.getResponseText());
 	}
 
@@ -93,7 +102,67 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 	@Override
 	public void update(String type, String id, DataGroup record, DataGroup collectedTerms,
 			DataGroup linkList, String dataDivider) {
-		throw NotImplementedException.withMessage("update is not implemented");
+		if (PERSON.equals(type)) {
+			convertAndWritePlaceToFedora(type, id, record, collectedTerms);
+		} else {
+			throw NotImplementedException
+					.withMessage("update is not implemented for type: " + type);
+		}
+	}
+
+	private void convertAndWritePlaceToFedora(String type, String id, DataGroup record,
+			DataGroup collectedTerms) {
+		try {
+			tryToConvertAndWritePlaceToFedora(type, id, record, collectedTerms);
+		} catch (Exception e) {
+			throw FedoraException
+					.withMessageAndException("update to fedora failed for record: " + id, e);
+		}
+	}
+
+	private void tryToConvertAndWritePlaceToFedora(String type, String id, DataGroup record,
+			DataGroup collectedTerms) throws UnsupportedEncodingException {
+		String url = createUrlForWritingMetadataStreamToFedora(id, collectedTerms);
+		HttpHandler httpHandler = createHttpHandlerForUpdatingDatastreamUsingURL(url);
+		String fedoraXML = convertRecordToFedoraXML(type, record);
+		httpHandler.setOutput(fedoraXML);
+		int responseCode = httpHandler.getResponseCode();
+		throwErrorIfNotOkFromFedora(id, responseCode);
+	}
+
+	private void throwErrorIfNotOkFromFedora(String id, int responseCode) {
+		if (200 != responseCode) {
+			throw FedoraException.withMessage("update to fedora failed for record: " + id
+					+ ", with response code: " + responseCode);
+		}
+	}
+
+	private String createUrlForWritingMetadataStreamToFedora(String id, DataGroup collectedTerms)
+			throws UnsupportedEncodingException {
+		return baseURL + "objects/" + id + "/datastreams/METADATA?format=?xml&controlGroup=M"
+				+ "&logMessage=coraWritten&checksumType=SHA-512";
+	}
+
+	private HttpHandler createHttpHandlerForUpdatingDatastreamUsingURL(String url) {
+		HttpHandler httpHandler = httpHandlerFactory.factor(url);
+		setRequestMethodForUpdatingDatastreamInFedora(httpHandler);
+		setAutorizationInHttpHandler(httpHandler);
+		return httpHandler;
+	}
+
+	private void setRequestMethodForUpdatingDatastreamInFedora(HttpHandler httpHandler) {
+		httpHandler.setRequestMethod("PUT");
+	}
+
+	private void setAutorizationInHttpHandler(HttpHandler httpHandler) {
+		String encoded = Base64.getEncoder()
+				.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+		httpHandler.setRequestProperty("Authorization", "Basic " + encoded);
+	}
+
+	private String convertRecordToFedoraXML(String type, DataGroup record) {
+		DivaCoraToFedoraConverter converter = converterFactory.factorToFedoraConverter(type);
+		return converter.toXML(record);
 	}
 
 	@Override
@@ -108,7 +177,7 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 		try {
 			return tryGetSpiderReadResultFromFedoraPersonListConversion();
 		} catch (Exception e) {
-			throw ReadFedoraException.withMessageAndException(
+			throw FedoraException.withMessageAndException(
 					"Unable to read list of persons: " + e.getMessage(), e);
 		}
 	}

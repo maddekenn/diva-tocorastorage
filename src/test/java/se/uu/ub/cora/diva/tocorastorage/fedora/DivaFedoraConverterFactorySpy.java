@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uppsala University Library
+ * Copyright 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,19 +21,27 @@ package se.uu.ub.cora.diva.tocorastorage.fedora;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraConverter;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraConverterFactory;
-
 public class DivaFedoraConverterFactorySpy implements DivaFedoraConverterFactory {
 
 	List<DivaFedoraToCoraConverter> factoredConverters = new ArrayList<>();
 	List<String> factoredTypes = new ArrayList<>();
+	List<DivaCoraToFedoraConverter> factoredToFedoraConverters = new ArrayList<>();
+	public List<String> factoredToFedoraTypes = new ArrayList<>();
 
 	@Override
-	public DivaFedoraToCoraConverter factor(String type) {
+	public DivaFedoraToCoraConverter factorToCoraConverter(String type) {
 		factoredTypes.add(type);
 		DivaFedoraToCoraConverter converter = new DivaFedoraToCoraConverterSpy();
 		factoredConverters.add(converter);
+		return converter;
+	}
+
+	@Override
+	public DivaCoraToFedoraConverter factorToFedoraConverter(String type) {
+		factoredToFedoraTypes.add(type);
+		DivaCoraToFedoraConverter converter = new DivaCoraToFedoraConverterSpy();
+		factoredToFedoraConverters.add(converter);
+
 		return converter;
 	}
 

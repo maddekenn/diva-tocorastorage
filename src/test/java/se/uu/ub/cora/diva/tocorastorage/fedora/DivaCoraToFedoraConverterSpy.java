@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2019 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,10 +18,18 @@
  */
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
-public interface DivaFedoraConverterFactory {
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-	DivaFedoraToCoraConverter factorToCoraConverter(String type);
+public class DivaCoraToFedoraConverterSpy implements DivaCoraToFedoraConverter {
 
-	DivaCoraToFedoraConverter factorToFedoraConverter(String type);
+	public DataGroup record;
+	public String returnedXML = "<dummy>Dummy xml from DivaCoraToFedoraConverterSpy</dummy>";
+
+	@Override
+	public String toXML(DataGroup record) {
+
+		this.record = record;
+		return returnedXML;
+	}
 
 }
