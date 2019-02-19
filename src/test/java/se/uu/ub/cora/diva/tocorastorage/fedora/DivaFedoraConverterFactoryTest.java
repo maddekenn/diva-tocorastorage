@@ -18,23 +18,22 @@
  */
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.diva.tocorastorage.NotImplementedException;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraConverter;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraConverterFactory;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraConverterFactoryImp;
-import se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverter;
+import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
 
 public class DivaFedoraConverterFactoryTest {
-	private DivaFedoraConverterFactory divaToCoraConverterFactoryImp;
+	private DivaFedoraConverterFactoryImp divaToCoraConverterFactoryImp;
+	private String fedoraURL = "someFedoraUrl";
 
 	@BeforeMethod
 	public void beforeMethod() {
-		divaToCoraConverterFactoryImp = new DivaFedoraConverterFactoryImp();
+		divaToCoraConverterFactoryImp = DivaFedoraConverterFactoryImp.usingFedoraURL(fedoraURL);
 	}
 
 	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
@@ -45,7 +44,34 @@ public class DivaFedoraConverterFactoryTest {
 
 	@Test
 	public void testFactoryPerson() throws Exception {
-		DivaFedoraToCoraConverter converter = divaToCoraConverterFactoryImp.factorToCoraConverter("person");
+		DivaFedoraToCoraConverter converter = divaToCoraConverterFactoryImp
+				.factorToCoraConverter("person");
 		assertTrue(converter instanceof DivaFedoraToCoraPersonConverter);
+	}
+
+	@Test(expectedExceptions = NotImplementedException.class, expectedExceptionsMessageRegExp = ""
+			+ "No converter implemented for: someType")
+	public void factorToFedoraUnknownTypeThrowsException() throws Exception {
+		divaToCoraConverterFactoryImp.factorToFedoraConverter("someType");
+	}
+
+	@Test
+	public void testFactoryToFedoraPerson() throws Exception {
+		DivaCoraToFedoraConverter converter = divaToCoraConverterFactoryImp
+				.factorToFedoraConverter("person");
+		assertTrue(converter instanceof DivaCoraToFedoraPersonConverter);
+	}
+
+	@Test
+	public void testFactorToFedoraForPlaceHasCorrectDependencies() throws Exception {
+		DivaCoraToFedoraPersonConverter converter = (DivaCoraToFedoraPersonConverter) divaToCoraConverterFactoryImp
+				.factorToFedoraConverter("person");
+		assertTrue(converter.getHttpHandlerFactory() instanceof HttpHandlerFactoryImp);
+		assertEquals(converter.getFedorURL(), fedoraURL);
+	}
+
+	@Test
+	public void testGetFedoraURLNeededForTests() throws Exception {
+		assertEquals(divaToCoraConverterFactoryImp.getFedoraURL(), fedoraURL);
 	}
 }
