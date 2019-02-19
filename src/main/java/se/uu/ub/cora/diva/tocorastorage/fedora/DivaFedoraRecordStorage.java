@@ -18,7 +18,6 @@
  */
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -103,26 +102,24 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 	public void update(String type, String id, DataGroup record, DataGroup collectedTerms,
 			DataGroup linkList, String dataDivider) {
 		if (PERSON.equals(type)) {
-			convertAndWritePlaceToFedora(type, id, record, collectedTerms);
+			convertAndWritePlaceToFedora(type, id, record);
 		} else {
 			throw NotImplementedException
 					.withMessage("update is not implemented for type: " + type);
 		}
 	}
 
-	private void convertAndWritePlaceToFedora(String type, String id, DataGroup record,
-			DataGroup collectedTerms) {
+	private void convertAndWritePlaceToFedora(String type, String id, DataGroup record) {
 		try {
-			tryToConvertAndWritePlaceToFedora(type, id, record, collectedTerms);
+			tryToConvertAndWritePlaceToFedora(type, id, record);
 		} catch (Exception e) {
 			throw FedoraException
 					.withMessageAndException("update to fedora failed for record: " + id, e);
 		}
 	}
 
-	private void tryToConvertAndWritePlaceToFedora(String type, String id, DataGroup record,
-			DataGroup collectedTerms) throws UnsupportedEncodingException {
-		String url = createUrlForWritingMetadataStreamToFedora(id, collectedTerms);
+	private void tryToConvertAndWritePlaceToFedora(String type, String id, DataGroup record) {
+		String url = createUrlForWritingMetadataStreamToFedora(id);
 		HttpHandler httpHandler = createHttpHandlerForUpdatingDatastreamUsingURL(url);
 		String fedoraXML = convertRecordToFedoraXML(type, record);
 		httpHandler.setOutput(fedoraXML);
@@ -137,8 +134,7 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 		}
 	}
 
-	private String createUrlForWritingMetadataStreamToFedora(String id, DataGroup collectedTerms)
-			throws UnsupportedEncodingException {
+	private String createUrlForWritingMetadataStreamToFedora(String id) {
 		return baseURL + "objects/" + id + "/datastreams/METADATA?format=?xml&controlGroup=M"
 				+ "&logMessage=coraWritten&checksumType=SHA-512";
 	}
