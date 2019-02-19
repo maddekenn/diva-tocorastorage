@@ -45,8 +45,7 @@ public class DivaFedoraToCoraRecordInfoConverter {
 		addDataDivider();
 		addCreatedBy();
 		parseAndAddTsCreated();
-		addUpdatedBy();
-		parseAndAddTsUpdated();
+		addUpdated();
 		return recordInfo;
 	}
 
@@ -90,16 +89,24 @@ public class DivaFedoraToCoraRecordInfoConverter {
 		return tsCreatedWithLetters.replace("T", " ").replace("Z", "");
 	}
 
-	private void addUpdatedBy() {
-		DataGroup updatedBy = createLinkWithNameInDataAndTypeAndId("updatedBy", "user", "12345");
-		recordInfo.addChild(updatedBy);
+	private void addUpdated() {
+		DataGroup updatedGroup = DataGroup.withNameInData("updated");
+		recordInfo.addChild(updatedGroup);
+		updatedGroup.setRepeatId("0");
+		addUpdatedBy(updatedGroup);
+		parseAndAddTsUpdated(updatedGroup);
 	}
 
-	private void parseAndAddTsUpdated() {
+	private void addUpdatedBy(DataGroup updatedGroup) {
+		DataGroup updatedBy = createLinkWithNameInDataAndTypeAndId("updatedBy", "user", "12345");
+		updatedGroup.addChild(updatedBy);
+	}
+
+	private void parseAndAddTsUpdated(DataGroup updatedGroup) {
 		String tsUpdatedWithLetters = getLastTsUpdatedFromDocument();
 		String tsUpdated = removeTAndZFromTimestamp(tsUpdatedWithLetters);
 
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("tsUpdated", tsUpdated));
+		updatedGroup.addChild(DataAtomic.withNameInDataAndValue("tsUpdated", tsUpdated));
 	}
 
 	private String getLastTsUpdatedFromDocument() {

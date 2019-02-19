@@ -25,9 +25,9 @@ public class DivaFedoraToCoraPersonConverterTestHelper {
 				.iterator().next();
 	}
 
-	public static void assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(DataGroup recordInfo,
+	public static void assertCorrectTsUpdatedUsingUpdatedAndTsUpdated(DataGroup updatedGroup,
 			String tsUpdated) {
-		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("tsUpdated"), tsUpdated);
+		assertEquals(updatedGroup.getFirstAtomicValueWithNameInData("tsUpdated"), tsUpdated);
 	}
 
 	public static void assertCorrectTsCreatedUsingRecordInfoAndTsCreated(DataGroup recordInfo,
@@ -35,9 +35,10 @@ public class DivaFedoraToCoraPersonConverterTestHelper {
 		assertEquals(recordInfo.getFirstAtomicValueWithNameInData("tsCreated"), tsCreated);
 	}
 
-	public static void assertCorrectUpdatedByUsingRecordInfoAndUserId(DataGroup recordInfo,
+	public static void assertCorrectUpdatedByUsingUpdatedAndUserId(DataGroup updatedGroup,
 			String userId) {
-		assertCorrectUserLinkUsingRecordInfoAndNameInDataAndUserId(recordInfo, "updatedBy", userId);
+		assertCorrectUserLinkUsingRecordInfoAndNameInDataAndUserId(updatedGroup, "updatedBy",
+				userId);
 	}
 
 	public static void assertCorrectCreatedByUsingRecordInfoAndUserId(DataGroup recordInfo,

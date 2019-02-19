@@ -23,7 +23,6 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
@@ -79,8 +78,7 @@ public class DivaFedoraRecordStorageTest {
 		assertEquals(httpHandlerFactory.urls.get(0),
 				baseURL + "objects/authority-person:11685/datastreams/METADATA/content");
 		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 1);
-		HttpHandlerSpy httpHandler = (HttpHandlerSpy) httpHandlerFactory.factoredHttpHandlers
-				.get(0);
+		HttpHandlerSpy httpHandler = httpHandlerFactory.factoredHttpHandlers.get(0);
 		assertEquals(httpHandler.requestMetod, "GET");
 
 		assertEquals(converterFactory.factoredConverters.size(), 1);
@@ -129,13 +127,11 @@ public class DivaFedoraRecordStorageTest {
 				linkList, dataDivider);
 
 		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 1);
-		String encodedLabel = URLEncoder.encode("Some Person Collected Name åäö", "UTF-8");
 		assertEquals(httpHandlerFactory.urls.get(0),
 				baseURL + "objects/diva-person:2233/datastreams/METADATA?format=?xml&controlGroup=M"
-						+ "&logMessage=coraWritten&checksumType=SHA-512&dsLabel=" + encodedLabel);
+						+ "&logMessage=coraWritten&checksumType=SHA-512");
 
-		HttpHandlerSpy httpHandler = (HttpHandlerSpy) httpHandlerFactory.factoredHttpHandlers
-				.get(0);
+		HttpHandlerSpy httpHandler = httpHandlerFactory.factoredHttpHandlers.get(0);
 		assertEquals(httpHandler.requestMetod, "PUT");
 		String encoded = Base64.getEncoder().encodeToString(
 				(fedoraUsername + ":" + fedoraPassword).getBytes(StandardCharsets.UTF_8));
@@ -165,38 +161,6 @@ public class DivaFedoraRecordStorageTest {
 		collectedRecordLabel.addChild(DataAtomic.withNameInDataAndValue("collectTermValue",
 				"Some Person Collected Name åäö"));
 		return collectedTerms;
-	}
-
-	@Test
-	public void updateIsMissingRecordLabelInCollectedStorageTerms() throws Exception {
-		httpHandlerFactory.responseText = "Dummy response text";
-		DataGroup record = DataGroup.withNameInData("authority");
-
-		DataGroup collectedTerms = DataGroup.withNameInData("collectedData");
-		collectedTerms.addChild(DataAtomic.withNameInDataAndValue("type", "person"));
-		collectedTerms.addChild(DataAtomic.withNameInDataAndValue("id", "diva-person:2244"));
-
-		DataGroup storageTerms = DataGroup.withNameInData("storage");
-		collectedTerms.addChild(storageTerms);
-
-		DataGroup collectedRecordLabel = DataGroup.withNameInData("collectedDataTerm");
-		storageTerms.addChild(collectedRecordLabel);
-		collectedRecordLabel.setRepeatId("someRepeatId");
-		collectedRecordLabel.addChild(
-				DataAtomic.withNameInDataAndValue("collectTermId", "NOTrecordLabelStorageTerm"));
-		collectedRecordLabel.addChild(
-				DataAtomic.withNameInDataAndValue("collectTermValue", "SomePlaceCollectedName"));
-
-		DataGroup linkList = null;
-		String dataDivider = null;
-
-		divaToCoraRecordStorage.update("person", "diva-person:2244", record, collectedTerms,
-				linkList, dataDivider);
-
-		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 1);
-		assertEquals(httpHandlerFactory.urls.get(0), baseURL
-				+ "objects/diva-person:2244/datastreams/METADATA?format=?xml&controlGroup=M"
-				+ "&logMessage=coraWritten&checksumType=SHA-512&dsLabel=LabelNotPresentInStorageTerms");
 	}
 
 	@Test(expectedExceptions = FedoraException.class, expectedExceptionsMessageRegExp = ""
@@ -247,8 +211,7 @@ public class DivaFedoraRecordStorageTest {
 		assertEquals(httpHandlerFactory.urls.get(0), baseURL
 				+ "objects?pid=true&maxResults=100&resultFormat=xml&query=pid%7Eauthority-person:*");
 		assertEquals(httpHandlerFactory.factoredHttpHandlers.size(), 4);
-		HttpHandlerSpy httpHandler = (HttpHandlerSpy) httpHandlerFactory.factoredHttpHandlers
-				.get(0);
+		HttpHandlerSpy httpHandler = httpHandlerFactory.factoredHttpHandlers.get(0);
 		assertEquals(httpHandler.requestMetod, "GET");
 
 		assertEquals(httpHandlerFactory.urls.get(1),

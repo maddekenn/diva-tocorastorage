@@ -65,9 +65,6 @@ public class DivaCoraToFedoraPersonConverterTest {
 		DataAtomic givenName = DataAtomic.withNameInDataAndValue("givenName", "Karl");
 		authorizedNameGroup.addChild(givenName);
 
-		DataAtomic academicTitle = DataAtomic.withNameInDataAndValue("academicTitle", "Dr.");
-		authorizedNameGroup.addChild(academicTitle);
-
 		return record;
 	}
 

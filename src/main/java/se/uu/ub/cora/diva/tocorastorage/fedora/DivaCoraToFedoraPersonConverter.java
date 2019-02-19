@@ -63,7 +63,6 @@ public class DivaCoraToFedoraPersonConverter implements DivaCoraToFedoraConverte
 		DataGroup authorizedNameGroup = record.getFirstGroupWithNameInData("authorizedName");
 		updateFamilyName(authorizedNameGroup);
 		updateGivenName(authorizedNameGroup);
-		updateAcademicTitle(authorizedNameGroup);
 	}
 
 	private void updateFamilyName(DataGroup authorizedNameGroup) {
@@ -78,13 +77,6 @@ public class DivaCoraToFedoraPersonConverter implements DivaCoraToFedoraConverte
 				.getFirstAtomicValueWithNameInData("givenName");
 		setStringFromDocumentUsingXPath("/authorityPerson/defaultName/firstname",
 				givenNameFromPersonRecord);
-	}
-
-	private void updateAcademicTitle(DataGroup authorizedNameGroup) {
-		String academicTitleFromPersonRecord = authorizedNameGroup
-				.getFirstAtomicValueWithNameInData("academicTitle");
-		setStringFromDocumentUsingXPath("/authorityPerson/defaultName/addition",
-				academicTitleFromPersonRecord);
 	}
 
 	private void setStringFromDocumentUsingXPath(String xpathString, String newValue) {

@@ -23,8 +23,8 @@ import static org.testng.Assert.assertFalse;
 import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectCreatedByUsingRecordInfoAndUserId;
 import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectIdUsingRecordInfoAndId;
 import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectTsCreatedUsingRecordInfoAndTsCreated;
-import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated;
-import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectUpdatedByUsingRecordInfoAndUserId;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectTsUpdatedUsingUpdatedAndTsUpdated;
+import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertCorrectUpdatedByUsingUpdatedAndUserId;
 import static se.uu.ub.cora.diva.tocorastorage.fedora.DivaFedoraToCoraPersonConverterTestHelper.assertRecordInfoPersonInDiva;
 
 import java.util.List;
@@ -65,8 +65,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2016-09-02 10:59:47.428");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
 		assertCorrectName(name, "Testsson", "Test", null);
@@ -78,7 +77,13 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectName(allGroupsWithNameInData.get(1), "Testsson", "Test", "1");
 		assertCorrectName(allGroupsWithNameInData.get(2), "Testsson2", "Test2", "2");
 		assertEquals(allGroupsWithNameInData.size(), 3);
+	}
 
+	private void assertCorrectHardCodedUpdatedInRecordInfo(DataGroup recordInfo) {
+		DataGroup updatedGroup = recordInfo.getFirstGroupWithNameInData("updated");
+		assertCorrectUpdatedByUsingUpdatedAndUserId(updatedGroup, "12345");
+		assertCorrectTsUpdatedUsingUpdatedAndTsUpdated(updatedGroup, "2018-02-08 10:16:19.538");
+		assertEquals(updatedGroup.getRepeatId(), "0");
 	}
 
 	private void assertCorrectName(DataGroup dataGroup, String expectedLastName,
@@ -105,8 +110,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
 		assertCorrectName(name, "Svensson", "Sven", null);
@@ -132,8 +136,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
 		assertFalse(name.containsChildWithNameInData("givenName"));
@@ -154,8 +157,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		DataGroup name = personDataGroup.getFirstGroupWithNameInData("authorizedName");
 		assertFalse(name.containsChildWithNameInData("familyName"));
@@ -176,8 +178,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 		assertFalse(personDataGroup.containsChildWithNameInData("authorizedName"));
 	}
 
@@ -194,8 +195,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		List<DataGroup> allGroupsWithNameInData = personDataGroup
 				.getAllGroupsWithNameInData("alternativeName");
@@ -219,8 +219,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		List<DataGroup> allGroupsWithNameInData = personDataGroup
 				.getAllGroupsWithNameInData("alternativeName");
@@ -244,8 +243,7 @@ public class DivaFedoraToCoraPersonConverterTest {
 		assertCorrectCreatedByUsingRecordInfoAndUserId(recordInfo, "12345");
 		assertCorrectTsCreatedUsingRecordInfoAndTsCreated(recordInfo, "2018-02-19 10:10:43.448");
 
-		assertCorrectUpdatedByUsingRecordInfoAndUserId(recordInfo, "12345");
-		assertCorrectTsUpdatedUsingRecordInfoAndTsUpdated(recordInfo, "2018-02-08 10:16:19.538");
+		assertCorrectHardCodedUpdatedInRecordInfo(recordInfo);
 
 		assertFalse(personDataGroup.containsChildWithNameInData("alternativeName"));
 

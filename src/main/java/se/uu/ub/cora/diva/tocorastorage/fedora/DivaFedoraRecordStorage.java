@@ -19,14 +19,11 @@
 package se.uu.ub.cora.diva.tocorastorage.fedora;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -142,11 +139,8 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 
 	private String createUrlForWritingMetadataStreamToFedora(String id, DataGroup collectedTerms)
 			throws UnsupportedEncodingException {
-		String datastreamLabel = getRecordLabelValueFromStorageTerms(collectedTerms);
-		String encodedDatastreamLabel = "";
-		encodedDatastreamLabel = URLEncoder.encode(datastreamLabel, "UTF-8");
 		return baseURL + "objects/" + id + "/datastreams/METADATA?format=?xml&controlGroup=M"
-				+ "&logMessage=coraWritten&checksumType=SHA-512&dsLabel=" + encodedDatastreamLabel;
+				+ "&logMessage=coraWritten&checksumType=SHA-512";
 	}
 
 	private HttpHandler createHttpHandlerForUpdatingDatastreamUsingURL(String url) {
@@ -164,33 +158,6 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 		String encoded = Base64.getEncoder()
 				.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
 		httpHandler.setRequestProperty("Authorization", "Basic " + encoded);
-	}
-
-	private String getRecordLabelValueFromStorageTerms(DataGroup collectedTerms) {
-		DataGroup storageGroup = collectedTerms.getFirstGroupWithNameInData("storage");
-		List<DataGroup> collectedDataTerms = storageGroup
-				.getAllGroupsWithNameInData("collectedDataTerm");
-		Optional<DataGroup> firstGroupWithRecordLabelStorageTerm = collectedDataTerms.stream()
-				.filter(filterByCollectTermId()).findFirst();
-		return getRecordLabelFromCollectedTermsOrDefaultLabel(firstGroupWithRecordLabelStorageTerm);
-	}
-
-	private Predicate<DataGroup> filterByCollectTermId() {
-		return this::collectedDataTermIsRecordLabel;
-	}
-
-	private boolean collectedDataTermIsRecordLabel(DataGroup collectedDataTerm) {
-		String collectTermId = collectedDataTerm.getFirstAtomicValueWithNameInData("collectTermId");
-		return collectTermId.equals("recordLabelStorageTerm");
-	}
-
-	private String getRecordLabelFromCollectedTermsOrDefaultLabel(
-			Optional<DataGroup> firstGroupWithRecordLabelStorageTerm) {
-		if (firstGroupWithRecordLabelStorageTerm.isPresent()) {
-			return firstGroupWithRecordLabelStorageTerm.get()
-					.getFirstAtomicValueWithNameInData("collectTermValue");
-		}
-		return "LabelNotPresentInStorageTerms";
 	}
 
 	private String convertRecordToFedoraXML(String type, DataGroup record) {
