@@ -9,7 +9,7 @@ import se.uu.ub.cora.httphandler.HttpMultiPartUploader;
 
 public class HttpHandlerFactorySpy implements HttpHandlerFactory {
 	public List<String> urls = new ArrayList<>();
-	public List<HttpHandler> factoredHttpHandlers = new ArrayList<>();
+	public List<HttpHandlerSpy> factoredHttpHandlers = new ArrayList<>();
 	public String responseText = "";
 	public int responseCode = 200;
 

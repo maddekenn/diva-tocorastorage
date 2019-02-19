@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 import org.w3c.dom.NodeList;
 
 import se.uu.ub.cora.diva.tocorastorage.ParseException;
-import se.uu.ub.cora.diva.tocorastorage.fedora.XMLXPathParser;
 
 public class XMLXPathParserTest {
 
@@ -47,5 +46,19 @@ public class XMLXPathParserTest {
 		NodeList nodeList = parser.getNodeListFromDocumentUsingXPath("/pid");
 
 		parser.getStringFromDocumentUsingNodeAndXPath(nodeList.item(0), "/broken/xpath/string not");
+	}
+
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error setting string value on node")
+	public void testErrorWhenSettingString() throws Exception {
+		XMLXPathParser parser = XMLXPathParser.forXML("<pid></pid>");
+		parser.setStringInDocumentUsingXPath("/broken/xpath/string not", "dummy");
+	}
+
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error converting node to String")
+	public void testBrokenGetDocumentAsString() throws Exception {
+		XMLXPathParser parser = XMLXPathParser.forXML("<pid></pid>");
+		parser.getDocumentAsString("/broken/xpath/string not");
 	}
 }
