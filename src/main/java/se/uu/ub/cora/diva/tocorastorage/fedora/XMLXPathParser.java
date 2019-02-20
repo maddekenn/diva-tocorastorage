@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,8 +60,9 @@ public final class XMLXPathParser {
 
 	private DocumentBuilder createDocumentBuilder() throws ParserConfigurationException {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		// dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		// dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",
+		// true);
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		ErrorHandler errorHandlerWithoutSystemOutPrinting = new DefaultHandler();
 		dBuilder.setErrorHandler(errorHandlerWithoutSystemOutPrinting);
@@ -128,7 +128,7 @@ public final class XMLXPathParser {
 			Node nodeToExport = (Node) expr.evaluate(document, XPathConstants.NODE);
 			StringWriter sw = new StringWriter();
 			TransformerFactory tf = TransformerFactory.newInstance();
-			tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			// tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			Transformer transformer = tf.newTransformer();
 			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");

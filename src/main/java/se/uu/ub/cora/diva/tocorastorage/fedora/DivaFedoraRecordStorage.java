@@ -70,6 +70,21 @@ public final class DivaFedoraRecordStorage implements RecordStorage {
 	}
 
 	private DataGroup readAndConvertPersonFromFedora(String id) {
+		// try {
+		// FedoraClient fc = new FedoraClient(baseURL, username, password);
+		// Datastream datastream = fc.getAPIM().getDatastream("authority-person:11685",
+		// "METADATA",
+		// null);
+		// String createDate = datastream.getCreateDate();
+		// } catch (MalformedURLException e) {
+		// e.printStackTrace();
+		// } catch (RemoteException e) {
+		// e.printStackTrace();
+		// } catch (ServiceException e) {
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 		HttpHandler httpHandler = createHttpHandlerForPerson(id);
 		DivaFedoraToCoraConverter toCoraConverter = converterFactory.factorToCoraConverter(PERSON);
 		return toCoraConverter.fromXML(httpHandler.getResponseText());
